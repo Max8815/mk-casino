@@ -22,11 +22,11 @@ const GAMES = [
     },
     {
         id: 'slots',
-        icon: '🎰',
-        title: 'Slots',
-        sub: 'Classic 3-Reel',
-        badge: 'soon',
-        to: '#',
+        icon: '🚗',
+        title: 'Car Slots',
+        sub: '3-Reel · Up to 100x',
+        badge: 'live',
+        to: '/slots',
     },
     {
         id: 'crash',

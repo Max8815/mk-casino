@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Header = ({ usdtBalance, onDeposit }) => {
-    const handleDeposit = () => {
-        if (onDeposit) onDeposit();
-    };
+const Header = ({ usdtBalance, onDeposit, username }) => {
+    const initials = username
+        ? username.slice(0, 2).toUpperCase()
+        : 'MK';
 
     return (
         <div className="header">
@@ -12,21 +12,21 @@ const Header = ({ usdtBalance, onDeposit }) => {
                 <div className="header-left">
                     <Link to="/" className="brand-logo">
                         <span className="logo-icon">🎰</span>
-                        <span>MK Casino</span>
+                        <span className="gold-text-static">MK Casino</span>
                     </Link>
                 </div>
 
                 <div className="header-right">
                     <div className="usdt-balance-badge">
-                        <span className="usdt-dot"></span>
-                        <span>{Number(usdtBalance || 1000).toFixed(2)} USDT</span>
+                        <span className="usdt-dot" />
+                        <span>{Number(usdtBalance ?? 0).toFixed(2)} USDT</span>
                     </div>
 
-                    <button className="btn-deposit" onClick={handleDeposit}>
+                    <button className="btn-deposit" onClick={onDeposit}>
                         + Deposit
                     </button>
 
-                    <div className="user-avatar">MK</div>
+                    <div className="user-avatar" title={username}>{initials}</div>
                 </div>
             </div>
         </div>

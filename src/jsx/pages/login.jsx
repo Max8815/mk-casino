@@ -1,289 +1,480 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-// ─── Replace with your real TRC-20 wallet address ───────────────
 const CASINO_WALLET = 'YOUR_USDT_WALLET_ADDRESS';
-const MIN_DEPOSIT = 10;
+const WELCOME_BONUS = 100;
 
 const Login = ({ onLogin }) => {
     const history = useHistory();
-    const [tab, setTab] = useState('login'); // 'login' | 'signup' | 'deposit'
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [copied, setCopied] = useState(false);
+    const [tab, setTab] = useState('register'); // 'login' | 'register' | 'deposit'
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
-    const handleLogin = (e) => {
-        e.preventDefault();
-        if (!email || !password) { setError('Please fill in all fields'); return; }
-        if (onLogin) onLogin({ email });
-        history.push('/');
-    };
+    // Login fields
+    const [loginEmail, setLoginEmail] = useState('');
+    const [loginPassword, setLoginPassword] = useState('');
 
-    const handleGuest = () => {
-        if (onLogin) onLogin({ email: 'guest@mkcasino.io', isGuest: true });
-        history.push('/');
-    };
+    // Register fields
+    const [regUsername, setRegUsername] = useState('');
+    const [regEmail, setRegEmail] = useState('');
+    const [regPassword, setRegPassword] = useState('');
+    const [regConfirm, setRegConfirm] = useState('');
+    const [regAge, setRegAge] = useState(false);
+    const [regTerms, setRegTerms] = useState(false);
+    const [promoCode, setPromoCode] = useState('');
+    const [registered, setRegistered] = useState(false);
+
+    const [copied, setCopied] = useState(false);
 
     const copyAddress = () => {
         navigator.clipboard.writeText(CASINO_WALLET);
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        setTimeout(() => setCopied(false), 2500);
     };
 
+    const handleLogin = (e) => {
+        e.preventDefault();
+        setError('');
+        if (!loginEmail || !loginPassword) { setError('Please fill in all fields.'); return; }
+        onLogin({ email: loginEmail, username: loginEmail.split('@')[0], balance: 1000 });
+        history.push('/');
+    };
+
+    const handleRegister = (e) => {
+        e.preventDefault();
+        setError('');
+        if (!regUsername || !regEmail || !regPassword || !regConfirm) {
+            setError('Please fill in all required fields.'); return;
+        }
+        if (regPassword.length < 6) {
+            setError('Password must be at least 6 characters.'); return;
+        }
+        if (regPassword !== regConfirm) {
+            setError('Passwords do not match.'); return;
+        }
+        if (!regAge) {
+            setError('You must confirm you are 18 years or older.'); return;
+        }
+        if (!regTerms) {
+            setError('Please accept the Terms of Service.'); return;
+        }
+        setRegistered(true);
+        setSuccess('');
+    };
+
+    const handleClaim = () => {
+        onLogin({
+            email: regEmail,
+            username: regUsername,
+            balance: WELCOME_BONUS,
+            isNew: true,
+        });
+        history.push('/');
+    };
+
+    const TABS = [
+        { id: 'register', label: '✦ Register' },
+        { id: 'login',    label: 'Login' },
+        { id: 'deposit',  label: '💳 Deposit' },
+    ];
+
     return (
-        <div style={{
-            minHeight: '100vh',
-            background: 'var(--bg-dark)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px',
-            position: 'relative',
-            overflow: 'hidden',
-        }}>
-            {/* Background glow */}
-            <div style={{
-                position: 'absolute',
-                top: '20%', left: '50%',
-                transform: 'translateX(-50%)',
-                width: 600, height: 600,
-                borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%)',
-                pointerEvents: 'none',
-            }} />
+        <div className="login-page">
 
-            <div style={{ width: '100%', maxWidth: 420, position: 'relative', zIndex: 1 }}>
+            {/* ── LEFT HERO PANEL ── */}
+            <div className="login-hero">
+                <div className="login-hero-bg" />
+                <div className="login-hero-content">
+                    <span className="hero-casino-icon">🎰</span>
 
-                {/* Logo */}
-                <div style={{ textAlign: 'center', marginBottom: 32 }}>
-                    <div style={{ fontSize: '3.5rem', marginBottom: 8 }}>🎰</div>
-                    <h1 style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, color: 'var(--primary)', letterSpacing: '-0.02em' }}>
-                        MK Casino
+                    <h1 className="hero-title">
+                        <span className="gold-text">MK</span>
+                        <br />
+                        <span style={{ color: '#fff', fontSize: '2rem' }}>Casino</span>
                     </h1>
-                    <p style={{ margin: '6px 0 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                        Bet with USDT · Instant Payouts · Provably Fair
-                    </p>
-                </div>
+                    <p className="hero-subtitle">Premium Crypto Gaming</p>
 
-                {/* Card */}
-                <div className="card">
-                    {/* Tabs */}
-                    <div style={{ display: 'flex', borderBottom: '1px solid var(--border)' }}>
+                    {/* Promo highlight */}
+                    <div style={{
+                        background: 'linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05))',
+                        border: '1px solid rgba(212,175,55,0.4)',
+                        borderRadius: 20,
+                        padding: '22px 26px',
+                        marginBottom: 32,
+                        position: 'relative',
+                        overflow: 'hidden',
+                    }}>
+                        <div style={{
+                            position: 'absolute', top: 0, left: 0, right: 0,
+                            height: 2,
+                            background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)',
+                        }} />
+                        <div style={{ fontSize: '0.7rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.6)', marginBottom: 8 }}>
+                            Welcome Bonus
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                            <span style={{ fontFamily: 'Cinzel, serif', fontSize: '3rem', fontWeight: 900, background: 'linear-gradient(135deg, #F7E07A, #D4AF37)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                                $100
+                            </span>
+                            <span style={{ color: 'rgba(212,175,55,0.6)', fontSize: '0.85rem', fontWeight: 600 }}>FREE USDT</span>
+                        </div>
+                        <p style={{ color: 'rgba(212,175,55,0.5)', fontSize: '0.78rem', margin: '6px 0 0', lineHeight: 1.5 }}>
+                            Credited instantly on registration.<br/>No deposit required to claim.
+                        </p>
+                    </div>
+
+                    <div className="hero-features">
                         {[
-                            { id: 'login', label: 'Login' },
-                            { id: 'signup', label: 'Sign Up' },
-                            { id: 'deposit', label: '💳 Deposit' },
-                        ].map(t => (
+                            { icon: '🎡', title: 'European Roulette', desc: 'Single zero · Multiple bet types' },
+                            { icon: '🚗', title: 'Car Slots', desc: '3-reel · Up to 100x jackpot' },
+                            { icon: '⚡', title: 'USDT Payouts', desc: 'TRC-20 instant withdrawals' },
+                            { icon: '🔒', title: 'Provably Fair', desc: 'Verified on-chain randomness' },
+                        ].map(f => (
+                            <div key={f.title} className="hero-feature">
+                                <span className="hero-feature-icon">{f.icon}</span>
+                                <div className="hero-feature-text">
+                                    <strong>{f.title}</strong>
+                                    <span>{f.desc}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* ── RIGHT FORM PANEL ── */}
+            <div className="login-form-side">
+                <div className="login-form-inner">
+
+                    {/* Logo (mobile only) */}
+                    <div className="login-logo">
+                        <span className="login-logo-icon">🎰</span>
+                        <div className="gold-text login-logo-title">MK Casino</div>
+                        <div className="login-logo-sub">Premium Crypto Gaming</div>
+                    </div>
+
+                    {/* Promo banner */}
+                    <div className="promo-banner">
+                        <span className="promo-icon">🎁</span>
+                        <div className="promo-text">
+                            <strong className="gold-text-static">Welcome Bonus</strong>
+                            <p>Register now and get free USDT to start playing instantly</p>
+                        </div>
+                        <div className="promo-amount">
+                            <div className="amount-big gold-text-static">${WELCOME_BONUS}</div>
+                            <div className="amount-label">Free USDT</div>
+                        </div>
+                    </div>
+
+                    {/* Tabs */}
+                    <div className="form-tabs">
+                        {TABS.map(t => (
                             <button
                                 key={t.id}
-                                onClick={() => setTab(t.id)}
-                                style={{
-                                    flex: 1, padding: '14px 8px',
-                                    background: 'none', border: 'none',
-                                    color: tab === t.id ? 'var(--primary)' : 'var(--text-muted)',
-                                    fontWeight: tab === t.id ? 700 : 500,
-                                    fontSize: '0.88rem',
-                                    cursor: 'pointer',
-                                    borderBottom: tab === t.id ? '2px solid var(--primary)' : '2px solid transparent',
-                                    marginBottom: -1,
-                                    fontFamily: 'Poppins, sans-serif',
-                                    transition: 'color 0.2s',
-                                }}
+                                className={`form-tab ${tab === t.id ? 'active' : ''}`}
+                                onClick={() => { setTab(t.id); setError(''); setSuccess(''); }}
                             >
                                 {t.label}
                             </button>
                         ))}
                     </div>
 
-                    <div className="card-body">
-                        {/* ── LOGIN TAB ── */}
-                        {tab === 'login' && (
-                            <form onSubmit={handleLogin}>
-                                {error && (
-                                    <div style={{
-                                        background: 'rgba(244,106,106,0.1)',
-                                        border: '1px solid var(--danger)',
-                                        borderRadius: 8, padding: '10px 14px',
-                                        color: 'var(--danger)', fontSize: '0.82rem',
-                                        marginBottom: 16,
-                                    }}>
-                                        {error}
-                                    </div>
-                                )}
-
-                                <div style={{ marginBottom: 14 }}>
-                                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                        Email
-                                    </label>
-                                    <div className="amount-input-wrapper">
-                                        <input
-                                            type="email"
-                                            className="amount-input"
-                                            placeholder="you@example.com"
-                                            value={email}
-                                            onChange={e => { setEmail(e.target.value); setError(''); }}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div style={{ marginBottom: 20 }}>
-                                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                        Password
-                                    </label>
-                                    <div className="amount-input-wrapper">
-                                        <input
-                                            type="password"
-                                            className="amount-input"
-                                            placeholder="••••••••"
-                                            value={password}
-                                            onChange={e => { setPassword(e.target.value); setError(''); }}
-                                        />
-                                    </div>
-                                </div>
-
-                                <button type="submit" className="spin-btn" style={{ marginBottom: 10 }}>
-                                    Login & Play
-                                </button>
-
-                                <div style={{ textAlign: 'center', margin: '14px 0', color: 'var(--text-muted)', fontSize: '0.78rem' }}>
-                                    — or —
-                                </div>
-
-                                <button type="button" className="clear-btn" onClick={handleGuest} style={{ marginTop: 0 }}>
-                                    👤 Continue as Guest
-                                </button>
-                            </form>
-                        )}
-
-                        {/* ── SIGN UP TAB ── */}
-                        {tab === 'signup' && (
-                            <form onSubmit={handleLogin}>
-                                <div style={{ marginBottom: 14 }}>
-                                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                        Email
-                                    </label>
-                                    <div className="amount-input-wrapper">
-                                        <input type="email" className="amount-input" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} />
-                                    </div>
-                                </div>
-
-                                <div style={{ marginBottom: 14 }}>
-                                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                        Password
-                                    </label>
-                                    <div className="amount-input-wrapper">
-                                        <input type="password" className="amount-input" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} />
-                                    </div>
-                                </div>
-
-                                <div style={{ marginBottom: 20 }}>
-                                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                        Confirm Password
-                                    </label>
-                                    <div className="amount-input-wrapper">
-                                        <input type="password" className="amount-input" placeholder="••••••••" />
-                                    </div>
-                                </div>
-
-                                <button type="submit" className="spin-btn" style={{ marginBottom: 10 }}>
-                                    Create Account
-                                </button>
-
-                                <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: 12 }}>
-                                    By signing up you agree to our Terms of Service.
-                                    You must be 18+ to play.
-                                </p>
-                            </form>
-                        )}
-
-                        {/* ── DEPOSIT TAB ── */}
-                        {tab === 'deposit' && (
-                            <div>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 20, lineHeight: 1.6 }}>
-                                    Send <strong style={{ color: 'var(--usdt)' }}>USDT (TRC-20)</strong> to our casino wallet to load your balance and start playing instantly.
-                                </p>
-
-                                {/* Minimum deposit badge */}
+                    {/* ══ REGISTER TAB ══ */}
+                    {tab === 'register' && (
+                        registered ? (
+                            /* ── SUCCESS STATE ── */
+                            <div style={{ animation: 'floatUp 0.4s ease' }}>
                                 <div style={{
-                                    display: 'flex', alignItems: 'center', gap: 10,
-                                    background: 'rgba(38,161,123,0.08)',
-                                    border: '1px solid rgba(38,161,123,0.3)',
-                                    borderRadius: 10, padding: '10px 14px',
+                                    textAlign: 'center',
+                                    background: 'linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04))',
+                                    border: '1px solid rgba(212,175,55,0.4)',
+                                    borderRadius: 18,
+                                    padding: '32px 24px',
                                     marginBottom: 20,
+                                    position: 'relative',
+                                    overflow: 'hidden',
                                 }}>
-                                    <span style={{ fontSize: '1.2rem' }}>💎</span>
-                                    <div>
-                                        <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--usdt)' }}>
-                                            Minimum deposit: {MIN_DEPOSIT} USDT
+                                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, transparent, #D4AF37, transparent)' }} />
+                                    <div style={{ fontSize: '3rem', marginBottom: 12 }}>🎉</div>
+                                    <h3 style={{ fontFamily: 'Cinzel, serif', color: '#F7E07A', fontSize: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
+                                        Welcome, {regUsername}!
+                                    </h3>
+                                    <p style={{ color: 'rgba(212,175,55,0.5)', fontSize: '0.82rem', marginBottom: 20 }}>
+                                        Your account has been created. Your welcome bonus is ready to claim.
+                                    </p>
+
+                                    <div style={{
+                                        background: 'rgba(0,0,0,0.4)',
+                                        border: '1px solid rgba(212,175,55,0.3)',
+                                        borderRadius: 14,
+                                        padding: '18px',
+                                        marginBottom: 20,
+                                    }}>
+                                        <div style={{ fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: 6 }}>
+                                            Your Bonus
                                         </div>
-                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                                            Credited after 1 network confirmation
+                                        <div style={{ fontFamily: 'Cinzel, serif', fontSize: '2.5rem', fontWeight: 900, background: 'linear-gradient(135deg, #F7E07A, #D4AF37)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                                            ${WELCOME_BONUS} USDT
+                                        </div>
+                                        <div style={{ fontSize: '0.75rem', color: 'rgba(212,175,55,0.4)', marginTop: 4 }}>
+                                            Credited instantly to your casino balance
                                         </div>
                                     </div>
+
+                                    <button className="spin-btn" onClick={handleClaim} style={{ fontSize: '0.95rem', letterSpacing: '0.12em' }}>
+                                        🎰 Claim Bonus & Play Now
+                                    </button>
                                 </div>
-
-                                {/* Wallet address */}
-                                <div style={{ marginBottom: 12 }}>
-                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                                        Casino Wallet Address (TRC-20)
-                                    </label>
-                                    <div className="deposit-address-box" style={{ fontSize: '0.88rem', color: '#fff', letterSpacing: '0.02em' }}>
-                                        {CASINO_WALLET}
-                                    </div>
-                                </div>
-
-                                <button className="copy-btn" onClick={copyAddress} style={{ marginBottom: 16 }}>
-                                    {copied ? '✅ Copied to clipboard!' : '📋 Copy Wallet Address'}
-                                </button>
-
-                                {/* Network steps */}
-                                <div style={{ marginBottom: 20 }}>
-                                    {[
-                                        { step: '1', text: 'Open your crypto wallet (Trust Wallet, Binance, etc.)' },
-                                        { step: '2', text: 'Select USDT on the TRON (TRC-20) network' },
-                                        { step: '3', text: `Send at least ${MIN_DEPOSIT} USDT to the address above` },
-                                        { step: '4', text: 'Your balance is credited after 1 confirmation' },
-                                    ].map(item => (
-                                        <div key={item.step} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: 10 }}>
-                                            <span style={{
-                                                minWidth: 24, height: 24, borderRadius: '50%',
-                                                background: 'rgba(201,168,76,0.15)',
-                                                border: '1px solid rgba(201,168,76,0.4)',
-                                                color: 'var(--primary)',
-                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                fontSize: '0.72rem', fontWeight: 700,
-                                            }}>
-                                                {item.step}
-                                            </span>
-                                            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>{item.text}</span>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div style={{
-                                    padding: '10px 14px',
-                                    background: 'rgba(244,106,106,0.06)',
-                                    border: '1px solid rgba(244,106,106,0.2)',
-                                    borderRadius: 10,
-                                    fontSize: '0.75rem',
-                                    color: 'var(--text-muted)',
-                                }}>
-                                    ⚠️ Only send <strong style={{ color: '#e74c3c' }}>USDT TRC-20</strong>. Do not send ERC-20 or BEP-20 tokens — they will be lost.
-                                </div>
-
-                                <button className="spin-btn" style={{ marginTop: 20 }} onClick={() => setTab('login')}>
-                                    I've Deposited — Login to Play
-                                </button>
                             </div>
-                        )}
+                        ) : (
+                            /* ── REGISTER FORM ── */
+                            <form onSubmit={handleRegister}>
+                                {error && <div className="error-msg">{error}</div>}
+
+                                <div className="form-field">
+                                    <label className="form-label">Username *</label>
+                                    <input
+                                        type="text"
+                                        className={`form-input ${error && !regUsername ? 'error' : ''}`}
+                                        placeholder="Choose a username"
+                                        value={regUsername}
+                                        onChange={e => { setRegUsername(e.target.value); setError(''); }}
+                                    />
+                                </div>
+
+                                <div className="form-field">
+                                    <label className="form-label">Email Address *</label>
+                                    <input
+                                        type="email"
+                                        className={`form-input ${error && !regEmail ? 'error' : ''}`}
+                                        placeholder="you@example.com"
+                                        value={regEmail}
+                                        onChange={e => { setRegEmail(e.target.value); setError(''); }}
+                                    />
+                                </div>
+
+                                <div className="form-field">
+                                    <label className="form-label">Password *</label>
+                                    <input
+                                        type="password"
+                                        className={`form-input ${error && !regPassword ? 'error' : ''}`}
+                                        placeholder="Min. 6 characters"
+                                        value={regPassword}
+                                        onChange={e => { setRegPassword(e.target.value); setError(''); }}
+                                    />
+                                </div>
+
+                                <div className="form-field">
+                                    <label className="form-label">Confirm Password *</label>
+                                    <input
+                                        type="password"
+                                        className={`form-input ${error && regPassword !== regConfirm ? 'error' : ''}`}
+                                        placeholder="Repeat password"
+                                        value={regConfirm}
+                                        onChange={e => { setRegConfirm(e.target.value); setError(''); }}
+                                    />
+                                </div>
+
+                                <div className="form-field">
+                                    <label className="form-label">Promo Code <span style={{ color: 'rgba(212,175,55,0.3)' }}>(optional)</span></label>
+                                    <div style={{ position: 'relative' }}>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            placeholder="Enter promo code"
+                                            value={promoCode}
+                                            onChange={e => setPromoCode(e.target.value.toUpperCase())}
+                                            style={{ paddingRight: 80 }}
+                                        />
+                                        <span style={{
+                                            position: 'absolute', right: 14, top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            fontSize: '0.68rem', fontWeight: 800,
+                                            color: 'rgba(212,175,55,0.35)',
+                                            letterSpacing: '0.08em',
+                                        }}>
+                                            BONUS100
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div style={{ height: 8 }} />
+
+                                <div className="checkbox-row">
+                                    <input
+                                        type="checkbox"
+                                        id="age-check"
+                                        checked={regAge}
+                                        onChange={e => setRegAge(e.target.checked)}
+                                    />
+                                    <label htmlFor="age-check">
+                                        I confirm I am <strong style={{ color: 'rgba(212,175,55,0.7)' }}>18 years of age or older</strong> and gambling is legal in my jurisdiction
+                                    </label>
+                                </div>
+
+                                <div className="checkbox-row">
+                                    <input
+                                        type="checkbox"
+                                        id="terms-check"
+                                        checked={regTerms}
+                                        onChange={e => setRegTerms(e.target.checked)}
+                                    />
+                                    <label htmlFor="terms-check">
+                                        I accept the <a href="#terms">Terms of Service</a>, <a href="#privacy">Privacy Policy</a>, and <a href="#bonus">Bonus Rules</a>
+                                    </label>
+                                </div>
+
+                                <div style={{ height: 6 }} />
+
+                                <button type="submit" className="spin-btn">
+                                    ✦ Create Account & Claim $100
+                                </button>
+
+                                <div className="or-divider">or</div>
+
+                                <button
+                                    type="button"
+                                    className="btn-secondary"
+                                    onClick={() => {
+                                        onLogin({ email: 'guest@mkcasino.io', username: 'Guest', balance: 50, isGuest: true });
+                                        history.push('/');
+                                    }}
+                                >
+                                    👤 Continue as Guest ($50 Demo)
+                                </button>
+                            </form>
+                        )
+                    )}
+
+                    {/* ══ LOGIN TAB ══ */}
+                    {tab === 'login' && (
+                        <form onSubmit={handleLogin}>
+                            {error && <div className="error-msg">{error}</div>}
+
+                            <div className="form-field">
+                                <label className="form-label">Email Address</label>
+                                <input
+                                    type="email"
+                                    className="form-input"
+                                    placeholder="you@example.com"
+                                    value={loginEmail}
+                                    onChange={e => { setLoginEmail(e.target.value); setError(''); }}
+                                />
+                            </div>
+
+                            <div className="form-field">
+                                <label className="form-label">Password</label>
+                                <input
+                                    type="password"
+                                    className="form-input"
+                                    placeholder="••••••••"
+                                    value={loginPassword}
+                                    onChange={e => { setLoginPassword(e.target.value); setError(''); }}
+                                />
+                            </div>
+
+                            <div style={{ textAlign: 'right', marginBottom: 20, marginTop: -8 }}>
+                                <a href="#reset" style={{ fontSize: '0.78rem', color: 'rgba(212,175,55,0.45)' }}>
+                                    Forgot password?
+                                </a>
+                            </div>
+
+                            <button type="submit" className="spin-btn" style={{ marginBottom: 10 }}>
+                                Login to Play
+                            </button>
+
+                            <div className="or-divider">or</div>
+
+                            <button
+                                type="button"
+                                className="btn-secondary"
+                                onClick={() => {
+                                    onLogin({ email: 'guest@mkcasino.io', username: 'Guest', balance: 50, isGuest: true });
+                                    history.push('/');
+                                }}
+                            >
+                                👤 Continue as Guest ($50 Demo)
+                            </button>
+
+                            <div style={{ textAlign: 'center', marginTop: 16 }}>
+                                <span style={{ fontSize: '0.78rem', color: 'rgba(212,175,55,0.35)' }}>
+                                    No account?{' '}
+                                    <button
+                                        type="button"
+                                        onClick={() => setTab('register')}
+                                        style={{ background: 'none', border: 'none', color: 'var(--gold-mid)', cursor: 'pointer', fontWeight: 700, fontSize: '0.78rem', fontFamily: 'Poppins, sans-serif' }}
+                                    >
+                                        Register for $100 free →
+                                    </button>
+                                </span>
+                            </div>
+                        </form>
+                    )}
+
+                    {/* ══ DEPOSIT TAB ══ */}
+                    {tab === 'deposit' && (
+                        <div>
+                            <div style={{
+                                background: 'rgba(38,161,123,0.08)',
+                                border: '1px solid rgba(38,161,123,0.3)',
+                                borderRadius: 14,
+                                padding: '14px 18px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 12,
+                                marginBottom: 22,
+                            }}>
+                                <span style={{ fontSize: '1.5rem' }}>💎</span>
+                                <div>
+                                    <div style={{ fontWeight: 700, fontSize: '0.88rem', color: '#2ECC9F' }}>Minimum deposit: 10 USDT</div>
+                                    <div style={{ fontSize: '0.74rem', color: 'rgba(208,201,184,0.5)' }}>Credited after 1 network confirmation</div>
+                                </div>
+                            </div>
+
+                            <label className="form-label" style={{ marginBottom: 8, display: 'block' }}>
+                                Casino Wallet (USDT TRC-20)
+                            </label>
+                            <div className="deposit-address-box">{CASINO_WALLET}</div>
+                            <button className="copy-btn" onClick={copyAddress} style={{ marginBottom: 20 }}>
+                                {copied ? '✅ Copied to clipboard!' : '📋 Copy Wallet Address'}
+                            </button>
+
+                            <div className="deposit-steps">
+                                {[
+                                    'Open your wallet app (Trust Wallet, Binance, etc.)',
+                                    'Select USDT on the TRON (TRC-20) network',
+                                    `Send minimum ${10} USDT to the address above`,
+                                    'Balance credited after 1 block confirmation',
+                                ].map((text, i) => (
+                                    <div key={i} className="deposit-step">
+                                        <span className="step-num">{i + 1}</span>
+                                        <span className="step-text">{text}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div style={{
+                                padding: '12px 16px',
+                                background: 'rgba(231,76,60,0.05)',
+                                border: '1px solid rgba(231,76,60,0.2)',
+                                borderRadius: 12,
+                                fontSize: '0.76rem',
+                                color: 'rgba(208,201,184,0.6)',
+                                marginBottom: 20,
+                            }}>
+                                ⚠️ Only send <strong style={{ color: '#E74C3C' }}>USDT TRC-20</strong>. Sending other assets will result in permanent loss.
+                            </div>
+
+                            <button className="spin-btn" onClick={() => setTab('register')}>
+                                Register to Start Playing →
+                            </button>
+                        </div>
+                    )}
+
+                    <div className="login-footer">
+                        🔒 256-bit SSL Encrypted &nbsp;·&nbsp; 18+ Only &nbsp;·&nbsp; Play Responsibly
                     </div>
                 </div>
-
-                {/* Footer */}
-                <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.72rem', marginTop: 20 }}>
-                    🔒 Secure · 18+ Only · Play Responsibly
-                </p>
             </div>
         </div>
     );

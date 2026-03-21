@@ -10,37 +10,25 @@ import History from './pages/history';
 const Router = () => {
     const [user, setUser] = useState(null);
 
-    const handleLogin = (userData) => {
-        setUser(userData);
-    };
+    const handleLogin = (userData) => setUser(userData);
+    const handleLogout = () => setUser(null);
 
-    const handleLogout = () => {
-        setUser(null);
-    };
+    const guard = (Component, extraProps = {}) =>
+        user
+            ? <Component user={user} onLogout={handleLogout} {...extraProps} />
+            : <Redirect to="/login" />;
 
     return (
         <BrowserRouter>
             <div id="main-wrapper">
                 <Switch>
-                    <Route path="/login" render={() =>
-                        user ? <Redirect to="/" /> : <Login onLogin={handleLogin} />
-                    } />
-
-                    <Route path="/" exact render={() =>
-                        user ? <Dashboard user={user} onLogout={handleLogout} /> : <Redirect to="/login" />
-                    } />
-                    <Route path="/roulette" render={() =>
-                        user ? <Roulette /> : <Redirect to="/login" />
-                    } />
-                    <Route path="/slots" render={() =>
-                        user ? <Slots /> : <Redirect to="/login" />
-                    } />
-                    <Route path="/wallet" render={() =>
-                        user ? <Wallet /> : <Redirect to="/login" />
-                    } />
-                    <Route path="/history" render={() =>
-                        user ? <History /> : <Redirect to="/login" />
-                    } />
+                    <Route path="/login"    render={() => user ? <Redirect to="/" /> : <Login onLogin={handleLogin} />} />
+                    <Route path="/"         exact render={() => guard(Dashboard)} />
+                    <Route path="/roulette" render={() => guard(Roulette)} />
+                    <Route path="/slots"    render={() => guard(Slots)} />
+                    <Route path="/wallet"   render={() => guard(Wallet)} />
+                    <Route path="/history"  render={() => guard(History)} />
+                    <Redirect to="/login" />
                 </Switch>
             </div>
         </BrowserRouter>

@@ -1,28 +1,28 @@
 @import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Poppins:wght@300;400;500;600;700;800&display=swap");
 
 /* ═══════════════════════════════════════════════════════════════
-   MK CASINO — LUXURY BLACK & GOLD DESIGN SYSTEM
+   MK CASINO — AGGRESSIVE BLACK & RED DESIGN SYSTEM
 ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Gold palette */
-  --gold-light:   #F7E07A;
-  --gold:         #D4AF37;
-  --gold-mid:     #C9982A;
-  --gold-dark:    #9A7315;
-  --gold-glow:    rgba(212, 175, 55, 0.35);
-  --gold-subtle:  rgba(212, 175, 55, 0.08);
+  /* Red palette */
+  --red-light:    #FF3344;
+  --red:          #CC0011;
+  --red-mid:      #AA0000;
+  --red-dark:     #6B0000;
+  --red-glow:     rgba(200,0,17,0.4);
+  --red-subtle:   rgba(200,0,17,0.08);
 
   /* Black palette */
   --black:        #000000;
-  --bg-deep:      #05050A;
-  --bg-dark:      #08080F;
-  --bg-card:      #0D0D18;
-  --bg-card2:     #131325;
-  --bg-glass:     rgba(13, 13, 24, 0.85);
-  --border:       rgba(212, 175, 55, 0.18);
-  --border-mid:   rgba(212, 175, 55, 0.35);
-  --border-strong:rgba(212, 175, 55, 0.6);
+  --bg-deep:      #000000;
+  --bg-dark:      #030000;
+  --bg-card:      #070000;
+  --bg-card2:     #0C0000;
+  --bg-glass:     rgba(8,0,0,0.92);
+  --border:       rgba(200,0,17,0.22);
+  --border-mid:   rgba(200,0,17,0.42);
+  --border-strong:rgba(200,0,17,0.7);
 
   /* Status */
   --success:      #2ECC71;
@@ -52,30 +52,42 @@ body {
   font-size: 0.9rem;
   font-weight: 400;
   line-height: 1.6;
-  color: #D0C9B8;
-  background-color: var(--bg-deep);
+  color: #E0D0D0;
+  background-color: #000000;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
-a { color: var(--gold); text-decoration: none; transition: color 0.2s; }
-a:hover { color: var(--gold-light); }
+a { color: var(--red); text-decoration: none; transition: color 0.2s; }
+a:hover { color: var(--red-light); }
 
 /* ═══ SCROLLBAR ═══════════════════════════════════════════════ */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg-deep); }
-::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+::-webkit-scrollbar-thumb { background: var(--red-dark); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--red); }
 
-/* ═══ GOLD SHIMMER KEYFRAMES ══════════════════════════════════ */
+/* ═══ RED FIRE KEYFRAMES ══════════════════════════════════════ */
 @keyframes shimmer {
   0%   { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
 
+@keyframes redFlicker {
+  0%,100% { opacity:1; text-shadow: 0 0 8px rgba(255,50,50,0.8); }
+  25%      { opacity:0.9; text-shadow: 0 0 20px rgba(255,0,0,1), 0 0 40px rgba(180,0,0,0.6); }
+  50%      { opacity:1; text-shadow: 0 0 12px rgba(255,80,80,0.9); }
+  75%      { opacity:0.95; text-shadow: 0 0 30px rgba(220,0,0,1), 0 0 60px rgba(150,0,0,0.4); }
+}
+
+@keyframes bloodPulse {
+  0%,100% { box-shadow: 0 0 15px rgba(200,0,17,0.4), 0 0 40px rgba(200,0,17,0.15); }
+  50%      { box-shadow: 0 0 40px rgba(255,0,0,0.8), 0 0 80px rgba(200,0,17,0.4), 0 0 120px rgba(150,0,0,0.2); }
+}
+
 @keyframes goldPulse {
-  0%, 100% { box-shadow: 0 0 20px var(--gold-glow); }
-  50%       { box-shadow: 0 0 40px rgba(212,175,55,0.6), 0 0 80px rgba(212,175,55,0.2); }
+  0%, 100% { box-shadow: 0 0 20px var(--red-glow); }
+  50%       { box-shadow: 0 0 40px rgba(200,0,17,0.6), 0 0 80px rgba(200,0,17,0.2); }
 }
 
 @keyframes floatUp {
@@ -99,13 +111,13 @@ a:hover { color: var(--gold-light); }
 }
 
 @keyframes borderGlow {
-  0%, 100% { border-color: rgba(212,175,55,0.2); }
-  50%       { border-color: rgba(212,175,55,0.6); }
+  0%, 100% { border-color: rgba(200,0,17,0.2); }
+  50%       { border-color: rgba(200,0,17,0.6); }
 }
 
 /* ═══ GOLD TEXT GRADIENT ══════════════════════════════════════ */
 .gold-text {
-  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 40%, var(--gold-mid) 70%, var(--gold-light) 100%);
+  background: linear-gradient(135deg, var(--red-light) 0%, var(--red) 40%, var(--red-mid) 70%, var(--red-light) 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -114,7 +126,7 @@ a:hover { color: var(--gold-light); }
 }
 
 .gold-text-static {
-  background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-mid));
+  background: linear-gradient(135deg, var(--red-light), var(--red), var(--red-mid));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -126,7 +138,7 @@ a:hover { color: var(--gold-light); }
   top: 0; left: 0; right: 0;
   height: var(--header-h);
   z-index: 100;
-  background: linear-gradient(180deg, rgba(5,5,10,0.98) 0%, rgba(8,8,15,0.95) 100%);
+  background: linear-gradient(180deg, rgba(0,0,0,0.99) 0%, rgba(5,0,0,0.97) 100%);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(20px);
   display: flex;
@@ -139,7 +151,7 @@ a:hover { color: var(--gold-light); }
   position: absolute;
   bottom: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-mid), transparent);
+  background: linear-gradient(90deg, transparent, var(--red-mid), transparent);
   opacity: 0.6;
 }
 
@@ -190,10 +202,10 @@ a:hover { color: var(--gold-light); }
 
 .btn-deposit {
   padding: 9px 20px;
-  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-mid) 50%, var(--gold-dark) 100%);
+  background: linear-gradient(135deg, var(--red) 0%, var(--red-mid) 50%, var(--red-dark) 100%);
   border: none;
   border-radius: 30px;
-  color: #000;
+  color: #fff;
   font-family: var(--font-body);
   font-weight: 800;
   font-size: 0.8rem;
@@ -201,26 +213,26 @@ a:hover { color: var(--gold-light); }
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(212,175,55,0.3);
+  box-shadow: 0 4px 15px rgba(200,0,17,0.3);
 }
 
 .btn-deposit:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 25px rgba(212,175,55,0.5);
+  box-shadow: 0 6px 25px rgba(200,0,17,0.5);
 }
 
 .user-avatar {
   width: 38px; height: 38px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-  border: 2px solid var(--gold-mid);
+  background: linear-gradient(135deg, var(--red), var(--red-dark));
+  border: 2px solid var(--red-mid);
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: 0.8rem;
-  color: #000;
+  color: #fff;
   cursor: pointer;
-  box-shadow: 0 0 15px rgba(212,175,55,0.3);
+  box-shadow: 0 0 15px rgba(200,0,17,0.3);
 }
 
 /* ═══ SIDEBAR ══════════════════════════════════════════════════ */
@@ -229,7 +241,7 @@ a:hover { color: var(--gold-light); }
   top: 0; left: 0; bottom: 0;
   width: var(--sidebar-w);
   z-index: 101;
-  background: linear-gradient(180deg, #050510 0%, #08080F 100%);
+  background: linear-gradient(180deg, #000000 0%, #040000 100%);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -242,14 +254,14 @@ a:hover { color: var(--gold-light); }
   position: absolute;
   top: 0; right: 0; bottom: 0;
   width: 1px;
-  background: linear-gradient(180deg, transparent 0%, var(--gold-mid) 30%, var(--gold-mid) 70%, transparent 100%);
+  background: linear-gradient(180deg, transparent 0%, var(--red-mid) 30%, var(--red-mid) 70%, transparent 100%);
   opacity: 0.4;
 }
 
 .sidebar-logo {
   font-size: 1.8rem;
   margin-bottom: 28px;
-  filter: drop-shadow(0 0 10px rgba(212,175,55,0.5));
+  filter: drop-shadow(0 0 10px rgba(200,0,17,0.5));
 }
 
 .sidebar nav { flex: 1; width: 100%; }
@@ -273,7 +285,7 @@ a:hover { color: var(--gold-light); }
   width: 100%;
   height: 60px;
   border-radius: 14px;
-  color: rgba(212,175,55,0.35);
+  color: rgba(200,0,17,0.35);
   font-size: 1.5rem;
   transition: all 0.25s;
   text-decoration: none;
@@ -290,16 +302,16 @@ a:hover { color: var(--gold-light); }
 }
 
 .sidebar nav ul li a:hover {
-  background: rgba(212,175,55,0.07);
-  color: var(--gold);
+  background: rgba(200,0,17,0.07);
+  color: var(--red);
   border-color: var(--border);
 }
 
 .sidebar nav ul li a.active {
-  background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.06));
-  color: var(--gold);
+  background: linear-gradient(135deg, rgba(200,0,17,0.12), rgba(200,0,17,0.06));
+  color: var(--red);
   border-color: var(--border-mid);
-  box-shadow: 0 0 20px rgba(212,175,55,0.1), inset 0 0 20px rgba(212,175,55,0.05);
+  box-shadow: 0 0 20px rgba(200,0,17,0.1), inset 0 0 20px rgba(200,0,17,0.05);
 }
 
 .sidebar-bottom {
@@ -311,11 +323,11 @@ a:hover { color: var(--gold-light); }
 }
 
 .sidebar-bottom a {
-  color: rgba(212,175,55,0.3);
+  color: rgba(200,0,17,0.3);
   font-size: 1.3rem;
   transition: color 0.2s;
 }
-.sidebar-bottom a:hover { color: var(--gold); }
+.sidebar-bottom a:hover { color: var(--red); }
 
 /* ═══ CONTENT BODY ════════════════════════════════════════════ */
 .content-body {
@@ -344,12 +356,12 @@ a:hover { color: var(--gold-light); }
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-mid), transparent);
+  background: linear-gradient(90deg, transparent, var(--red-mid), transparent);
   opacity: 0.5;
 }
 
 .gold-divider span {
-  color: var(--gold);
+  color: var(--red);
   font-size: 0.7rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -371,7 +383,7 @@ a:hover { color: var(--gold-light); }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-mid), transparent);
+  background: linear-gradient(90deg, transparent, var(--red-mid), transparent);
   opacity: 0.4;
 }
 
@@ -383,7 +395,7 @@ a:hover { color: var(--gold-light); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(212,175,55,0.03);
+  background: rgba(200,0,17,0.03);
 }
 
 .card-header h4 {
@@ -392,7 +404,7 @@ a:hover { color: var(--gold-light); }
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--red);
 }
 
 .card-body { padding: 24px; }
@@ -403,8 +415,8 @@ a:hover { color: var(--gold-light); }
   padding: 16px;
   border-radius: 14px;
   border: none;
-  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 35%, var(--gold-mid) 65%, var(--gold-dark) 100%);
-  color: #000;
+  background: linear-gradient(135deg, #FF3344 0%, #CC0011 40%, #990000 100%);
+  color: #fff;
   font-family: var(--font-heading);
   font-size: 1rem;
   font-weight: 700;
@@ -412,7 +424,7 @@ a:hover { color: var(--gold-light); }
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow: 0 4px 25px rgba(212,175,55,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+  box-shadow: 0 4px 25px rgba(200,0,17,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
   position: relative;
   overflow: hidden;
 }
@@ -429,7 +441,7 @@ a:hover { color: var(--gold-light); }
 .spin-btn:hover:not(:disabled)::before { left: 100%; }
 .spin-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 35px rgba(212,175,55,0.5);
+  box-shadow: 0 8px 35px rgba(200,0,17,0.5);
 }
 .spin-btn:active:not(:disabled) { transform: translateY(0); }
 .spin-btn:disabled {
@@ -443,7 +455,7 @@ a:hover { color: var(--gold-light); }
   border-radius: 12px;
   border: 1px solid var(--border-mid);
   background: transparent;
-  color: rgba(212,175,55,0.5);
+  color: rgba(200,0,17,0.5);
   font-family: var(--font-body);
   font-size: 0.85rem;
   font-weight: 600;
@@ -480,8 +492,8 @@ a:hover { color: var(--gold-light); }
   padding: 13px;
   border-radius: 12px;
   border: 1px solid var(--border-mid);
-  background: rgba(212,175,55,0.06);
-  color: var(--gold);
+  background: rgba(200,0,17,0.06);
+  color: var(--red);
   font-family: var(--font-body);
   font-weight: 600;
   font-size: 0.88rem;
@@ -489,7 +501,7 @@ a:hover { color: var(--gold-light); }
   letter-spacing: 0.04em;
   transition: all 0.25s;
 }
-.btn-secondary:hover { background: rgba(212,175,55,0.12); border-color: var(--border-strong); }
+.btn-secondary:hover { background: rgba(200,0,17,0.12); border-color: var(--border-strong); }
 
 /* ═══ FORM INPUTS ═════════════════════════════════════════════ */
 .amount-input-wrapper {
@@ -503,18 +515,18 @@ a:hover { color: var(--gold-light); }
 }
 
 .amount-input-wrapper:focus-within {
-  border-color: var(--gold-mid);
-  box-shadow: 0 0 0 3px rgba(212,175,55,0.1);
+  border-color: var(--red-mid);
+  box-shadow: 0 0 0 3px rgba(200,0,17,0.1);
 }
 
 .amount-currency {
   padding: 0 14px;
-  color: var(--gold-mid);
+  color: var(--red-mid);
   font-weight: 700;
   font-size: 0.82rem;
   letter-spacing: 0.05em;
   border-right: 1px solid var(--border);
-  background: rgba(212,175,55,0.06);
+  background: rgba(200,0,17,0.06);
   align-self: stretch;
   display: flex; align-items: center;
   white-space: nowrap;
@@ -534,7 +546,7 @@ a:hover { color: var(--gold-light); }
   letter-spacing: 0.02em;
 }
 
-.amount-input::placeholder { color: rgba(212,175,55,0.25); }
+.amount-input::placeholder { color: rgba(200,0,17,0.25); }
 
 .quick-amounts {
   display: flex;
@@ -547,8 +559,8 @@ a:hover { color: var(--gold-light); }
   padding: 6px 14px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: rgba(212,175,55,0.04);
-  color: rgba(212,175,55,0.6);
+  background: rgba(200,0,17,0.04);
+  color: rgba(200,0,17,0.6);
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
@@ -557,9 +569,9 @@ a:hover { color: var(--gold-light); }
   transition: all 0.2s;
 }
 .quick-btn:hover {
-  border-color: var(--gold-mid);
-  color: var(--gold);
-  background: rgba(212,175,55,0.1);
+  border-color: var(--red-mid);
+  color: var(--red);
+  background: rgba(200,0,17,0.1);
 }
 
 /* ═══ BET BUTTONS ═════════════════════════════════════════════ */
@@ -567,7 +579,7 @@ a:hover { color: var(--gold-light); }
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: rgba(212,175,55,0.5);
+  color: rgba(200,0,17,0.5);
   margin-bottom: 10px;
   font-weight: 700;
 }
@@ -582,8 +594,8 @@ a:hover { color: var(--gold-light); }
   padding: 10px 16px;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: rgba(212,175,55,0.04);
-  color: rgba(212,175,55,0.6);
+  background: rgba(200,0,17,0.04);
+  color: rgba(200,0,17,0.6);
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
@@ -595,16 +607,16 @@ a:hover { color: var(--gold-light); }
 }
 
 .bet-btn:hover {
-  border-color: var(--gold-mid);
-  color: var(--gold);
-  background: rgba(212,175,55,0.1);
+  border-color: var(--red-mid);
+  color: var(--red);
+  background: rgba(200,0,17,0.1);
 }
 
 .bet-btn.selected {
-  border-color: var(--gold);
-  background: rgba(212,175,55,0.18);
-  color: var(--gold-light);
-  box-shadow: 0 0 15px rgba(212,175,55,0.2);
+  border-color: var(--red);
+  background: rgba(200,0,17,0.18);
+  color: var(--red-light);
+  box-shadow: 0 0 15px rgba(200,0,17,0.2);
 }
 
 .bet-btn.red-btn {
@@ -675,21 +687,21 @@ a:hover { color: var(--gold-light); }
 }
 .number-btn:hover, .number-btn.selected {
   transform: scale(1.12);
-  border-color: var(--gold);
-  box-shadow: 0 0 10px rgba(212,175,55,0.3);
-  color: var(--gold-light);
+  border-color: var(--red);
+  box-shadow: 0 0 10px rgba(200,0,17,0.3);
+  color: var(--red-light);
 }
 
 /* ═══ ROULETTE CANVAS ════════════════════════════════════════ */
 .roulette-canvas {
   border-radius: 50%;
-  border: 4px solid var(--gold-mid);
+  border: 3px solid var(--red);
   box-shadow:
-    0 0 0 8px rgba(212,175,55,0.05),
-    0 0 40px rgba(212,175,55,0.25),
-    0 0 80px rgba(212,175,55,0.1);
+    0 0 0 8px rgba(200,0,17,0.05),
+    0 0 40px rgba(200,0,17,0.25),
+    0 0 80px rgba(200,0,17,0.1);
   display: block;
-  animation: goldPulse 3s ease-in-out infinite;
+  animation: bloodPulse 2s ease-in-out infinite;
 }
 
 /* ═══ STATS CARDS ════════════════════════════════════════════ */
@@ -715,7 +727,7 @@ a:hover { color: var(--gold-light); }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold-mid), transparent);
+  background: linear-gradient(90deg, transparent, var(--red-mid), transparent);
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -727,7 +739,7 @@ a:hover { color: var(--gold-light); }
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: rgba(212,175,55,0.5);
+  color: rgba(200,0,17,0.5);
   font-weight: 700;
   margin-bottom: 8px;
 }
@@ -784,7 +796,7 @@ a:hover { color: var(--gold-light); }
   font-size: 0.68rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(212,175,55,0.5);
+  color: rgba(200,0,17,0.5);
   padding: 12px 18px;
   border-bottom: 1px solid var(--border);
   text-align: left;
@@ -794,13 +806,13 @@ a:hover { color: var(--gold-light); }
 .history-table td {
   padding: 13px 18px;
   font-size: 0.85rem;
-  border-bottom: 1px solid rgba(212,175,55,0.06);
+  border-bottom: 1px solid rgba(200,0,17,0.06);
   vertical-align: middle;
   color: #C0B89A;
 }
 
 .history-table tr:last-child td { border-bottom: none; }
-.history-table tr:hover td { background: rgba(212,175,55,0.03); }
+.history-table tr:hover td { background: rgba(200,0,17,0.03); }
 
 .num-badge {
   display: inline-flex;
@@ -835,7 +847,7 @@ a:hover { color: var(--gold-light); }
   cursor: pointer;
   transition: all 0.35s;
   text-decoration: none;
-  color: #D0C9B8;
+  color: #E0D0D0;
   display: block;
   position: relative;
   overflow: hidden;
@@ -846,7 +858,7 @@ a:hover { color: var(--gold-light); }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold-mid), transparent);
+  background: linear-gradient(90deg, transparent, var(--red-mid), transparent);
   opacity: 0;
   transition: opacity 0.35s;
 }
@@ -856,8 +868,8 @@ a:hover { color: var(--gold-light); }
 .game-card:hover {
   border-color: var(--border-mid);
   transform: translateY(-5px);
-  box-shadow: 0 12px 40px rgba(212,175,55,0.15);
-  color: #D0C9B8;
+  box-shadow: 0 12px 40px rgba(200,0,17,0.15);
+  color: #E0D0D0;
 }
 
 .game-card.active { border-color: var(--border-mid); }
@@ -870,9 +882,9 @@ a:hover { color: var(--gold-light); }
 }
 .game-card.coming-soon::before { display: none; }
 
-.game-card-icon { font-size: 2.8rem; margin-bottom: 14px; filter: drop-shadow(0 0 10px rgba(212,175,55,0.3)); }
-.game-card-title { font-family: var(--font-heading); font-weight: 700; font-size: 0.95rem; margin-bottom: 5px; color: var(--gold-light); letter-spacing: 0.06em; }
-.game-card-sub { font-size: 0.76rem; color: rgba(212,175,55,0.45); margin-bottom: 12px; }
+.game-card-icon { font-size: 2.8rem; margin-bottom: 14px; filter: drop-shadow(0 0 10px rgba(200,0,17,0.3)); }
+.game-card-title { font-family: var(--font-heading); font-weight: 700; font-size: 0.95rem; margin-bottom: 5px; color: var(--red-light); letter-spacing: 0.06em; }
+.game-card-sub { font-size: 0.76rem; color: rgba(200,0,17,0.45); margin-bottom: 12px; }
 
 .badge-live {
   display: inline-block;
@@ -889,9 +901,9 @@ a:hover { color: var(--gold-light); }
 
 .badge-soon {
   display: inline-block;
-  background: rgba(212,175,55,0.08);
-  border: 1px solid rgba(212,175,55,0.25);
-  color: rgba(212,175,55,0.5);
+  background: rgba(200,0,17,0.08);
+  border: 1px solid rgba(200,0,17,0.25);
+  color: rgba(200,0,17,0.5);
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -915,14 +927,14 @@ a:hover { color: var(--gold-light); }
 }
 
 .modal-box {
-  background: linear-gradient(145deg, #0D0D1A, #131325);
+  background: linear-gradient(145deg, #070000, #0C0000);
   border: 1px solid var(--border-mid);
   border-radius: 24px;
   padding: 36px;
   width: 100%;
   max-width: 460px;
   position: relative;
-  box-shadow: 0 25px 80px rgba(0,0,0,0.8), 0 0 40px rgba(212,175,55,0.08);
+  box-shadow: 0 25px 80px rgba(0,0,0,0.8), 0 0 40px rgba(200,0,17,0.08);
 }
 
 .modal-box::before {
@@ -930,7 +942,7 @@ a:hover { color: var(--gold-light); }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  background: linear-gradient(90deg, transparent, var(--red), transparent);
   border-radius: 24px 24px 0 0;
 }
 
@@ -938,7 +950,7 @@ a:hover { color: var(--gold-light); }
   font-family: var(--font-heading);
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--gold-light);
+  color: var(--red-light);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 22px;
@@ -947,9 +959,9 @@ a:hover { color: var(--gold-light); }
 .modal-close {
   position: absolute;
   top: 18px; right: 20px;
-  background: rgba(212,175,55,0.06);
+  background: rgba(200,0,17,0.06);
   border: 1px solid var(--border);
-  color: rgba(212,175,55,0.5);
+  color: rgba(200,0,17,0.5);
   width: 32px; height: 32px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -966,7 +978,7 @@ a:hover { color: var(--gold-light); }
   padding: 14px 16px;
   font-family: monospace;
   font-size: 0.85rem;
-  color: var(--gold-light);
+  color: var(--red-light);
   word-break: break-all;
   margin-bottom: 12px;
   letter-spacing: 0.03em;
@@ -988,7 +1000,7 @@ a:hover { color: var(--gold-light); }
   align-items: center;
   justify-content: center;
   padding: 60px;
-  background: linear-gradient(135deg, #050510 0%, #0A0A1A 100%);
+  background: linear-gradient(135deg, #000000 0%, #0A0000 100%);
   border-right: 1px solid var(--border);
   position: relative;
   overflow: hidden;
@@ -1002,8 +1014,8 @@ a:hover { color: var(--gold-light); }
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 30% 50%, rgba(212,175,55,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 30%, rgba(212,175,55,0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 30% 50%, rgba(200,0,17,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 30%, rgba(200,0,17,0.04) 0%, transparent 50%);
 }
 
 .login-hero-content {
@@ -1015,7 +1027,7 @@ a:hover { color: var(--gold-light); }
 .hero-casino-icon {
   font-size: 5rem;
   margin-bottom: 24px;
-  filter: drop-shadow(0 0 30px rgba(212,175,55,0.5));
+  filter: drop-shadow(0 0 30px rgba(200,0,17,0.5));
   display: block;
 }
 
@@ -1031,7 +1043,7 @@ a:hover { color: var(--gold-light); }
 
 .hero-subtitle {
   font-size: 0.95rem;
-  color: rgba(212,175,55,0.5);
+  color: rgba(200,0,17,0.5);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-bottom: 48px;
@@ -1049,7 +1061,7 @@ a:hover { color: var(--gold-light); }
   align-items: center;
   gap: 14px;
   padding: 14px 18px;
-  background: rgba(212,175,55,0.05);
+  background: rgba(200,0,17,0.05);
   border: 1px solid var(--border);
   border-radius: 14px;
 }
@@ -1060,13 +1072,13 @@ a:hover { color: var(--gold-light); }
   display: block;
   font-size: 0.88rem;
   font-weight: 700;
-  color: var(--gold-light);
+  color: var(--red-light);
   margin-bottom: 2px;
 }
 
 .hero-feature-text span {
   font-size: 0.76rem;
-  color: rgba(212,175,55,0.45);
+  color: rgba(200,0,17,0.45);
 }
 
 .login-form-side {
@@ -1076,7 +1088,7 @@ a:hover { color: var(--gold-light); }
   align-items: center;
   justify-content: center;
   padding: 40px 28px;
-  background: var(--bg-dark);
+  background: #030000;
   position: relative;
 }
 
@@ -1084,7 +1096,7 @@ a:hover { color: var(--gold-light); }
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.04) 0%, transparent 60%);
+  background: radial-gradient(ellipse at 50% 0%, rgba(200,0,17,0.04) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -1103,7 +1115,7 @@ a:hover { color: var(--gold-light); }
   font-size: 3.2rem;
   display: block;
   margin-bottom: 10px;
-  filter: drop-shadow(0 0 20px rgba(212,175,55,0.5));
+  filter: drop-shadow(0 0 20px rgba(200,0,17,0.5));
 }
 
 .login-logo-title {
@@ -1116,7 +1128,7 @@ a:hover { color: var(--gold-light); }
 
 .login-logo-sub {
   font-size: 0.75rem;
-  color: rgba(212,175,55,0.45);
+  color: rgba(200,0,17,0.45);
   letter-spacing: 0.15em;
   text-transform: uppercase;
   margin-top: 4px;
@@ -1124,7 +1136,7 @@ a:hover { color: var(--gold-light); }
 
 /* ── PROMO BANNER ── */
 .promo-banner {
-  background: linear-gradient(135deg, rgba(212,175,55,0.12) 0%, rgba(212,175,55,0.05) 100%);
+  background: linear-gradient(135deg, rgba(200,0,17,0.12) 0%, rgba(200,0,17,0.05) 100%);
   border: 1px solid var(--border-mid);
   border-radius: 16px;
   padding: 18px 20px;
@@ -1134,7 +1146,7 @@ a:hover { color: var(--gold-light); }
   gap: 16px;
   position: relative;
   overflow: hidden;
-  animation: borderGlow 3s ease-in-out infinite;
+  animation: borderGlow 2s ease-in-out infinite;
 }
 
 .promo-banner::before {
@@ -1142,7 +1154,7 @@ a:hover { color: var(--gold-light); }
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  background: linear-gradient(90deg, transparent, var(--red), transparent);
   animation: shimmer 2.5s linear infinite;
   background-size: 200% auto;
 }
@@ -1159,7 +1171,7 @@ a:hover { color: var(--gold-light); }
 
 .promo-text p {
   font-size: 0.78rem;
-  color: rgba(212,175,55,0.6);
+  color: rgba(200,0,17,0.6);
   margin: 4px 0 0;
   line-height: 1.4;
 }
@@ -1180,7 +1192,7 @@ a:hover { color: var(--gold-light); }
 
 .promo-amount .amount-label {
   font-size: 0.65rem;
-  color: rgba(212,175,55,0.5);
+  color: rgba(200,0,17,0.5);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -1200,7 +1212,7 @@ a:hover { color: var(--gold-light); }
   padding: 10px 8px;
   border: none;
   background: none;
-  color: rgba(212,175,55,0.4);
+  color: rgba(200,0,17,0.4);
   font-family: var(--font-body);
   font-weight: 700;
   font-size: 0.82rem;
@@ -1212,10 +1224,10 @@ a:hover { color: var(--gold-light); }
 }
 
 .form-tab.active {
-  background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.08));
-  color: var(--gold);
+  background: linear-gradient(135deg, rgba(200,0,17,0.15), rgba(200,0,17,0.08));
+  color: var(--red);
   border: 1px solid var(--border-mid);
-  box-shadow: 0 4px 15px rgba(212,175,55,0.1);
+  box-shadow: 0 4px 15px rgba(200,0,17,0.1);
 }
 
 /* ── FORM FIELDS ── */
@@ -1225,7 +1237,7 @@ a:hover { color: var(--gold-light); }
   display: block;
   font-size: 0.68rem;
   font-weight: 700;
-  color: rgba(212,175,55,0.55);
+  color: rgba(200,0,17,0.55);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   margin-bottom: 8px;
@@ -1245,11 +1257,11 @@ a:hover { color: var(--gold-light); }
   letter-spacing: 0.02em;
 }
 
-.form-input::placeholder { color: rgba(212,175,55,0.2); }
+.form-input::placeholder { color: rgba(200,0,17,0.2); }
 
 .form-input:focus {
-  border-color: var(--gold-mid);
-  box-shadow: 0 0 0 3px rgba(212,175,55,0.1);
+  border-color: var(--red-mid);
+  box-shadow: 0 0 0 3px rgba(200,0,17,0.1);
 }
 
 .form-input.error { border-color: var(--danger); }
@@ -1264,19 +1276,19 @@ a:hover { color: var(--gold-light); }
 .checkbox-row input[type="checkbox"] {
   width: 18px; height: 18px;
   margin-top: 1px;
-  accent-color: var(--gold-mid);
+  accent-color: var(--red-mid);
   cursor: pointer;
   flex-shrink: 0;
 }
 
 .checkbox-row label {
   font-size: 0.78rem;
-  color: rgba(212,175,55,0.5);
+  color: rgba(200,0,17,0.5);
   line-height: 1.5;
   cursor: pointer;
 }
 
-.checkbox-row label a { color: var(--gold-mid); }
+.checkbox-row label a { color: var(--red-mid); }
 
 .error-msg {
   background: rgba(231,76,60,0.1);
@@ -1295,7 +1307,7 @@ a:hover { color: var(--gold-light); }
   align-items: center;
   gap: 12px;
   margin: 18px 0;
-  color: rgba(212,175,55,0.3);
+  color: rgba(200,0,17,0.3);
   font-size: 0.72rem;
   letter-spacing: 0.1em;
 }
@@ -1310,21 +1322,21 @@ a:hover { color: var(--gold-light); }
 .login-footer {
   text-align: center;
   font-size: 0.72rem;
-  color: rgba(212,175,55,0.3);
+  color: rgba(200,0,17,0.3);
   margin-top: 24px;
   letter-spacing: 0.05em;
 }
 
 /* ═══ JACKPOT BANNER ═════════════════════════════════════════ */
 .jackpot-banner {
-  background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
-  border: 1px solid var(--gold-mid);
+  background: linear-gradient(135deg, rgba(200,0,17,0.15), rgba(200,0,17,0.05));
+  border: 1px solid var(--red-mid);
   border-radius: 18px;
   padding: 22px 28px;
   text-align: center;
   margin-bottom: 22px;
   animation: floatUp 0.4s ease;
-  box-shadow: 0 0 40px rgba(212,175,55,0.15);
+  box-shadow: 0 0 40px rgba(200,0,17,0.15);
 }
 
 /* ═══ DEPOSIT ADDRESS SECTION ════════════════════════════════ */
@@ -1344,9 +1356,9 @@ a:hover { color: var(--gold-light); }
 .step-num {
   min-width: 24px; height: 24px;
   border-radius: 50%;
-  background: rgba(212,175,55,0.1);
+  background: rgba(200,0,17,0.1);
   border: 1px solid var(--border-mid);
-  color: var(--gold-mid);
+  color: var(--red-mid);
   font-size: 0.7rem;
   font-weight: 800;
   display: flex; align-items: center; justify-content: center;
@@ -1393,11 +1405,11 @@ a:hover { color: var(--gold-light); }
 .mt-2 { margin-top: 8px; }
 .mt-3 { margin-top: 16px; }
 .mt-4 { margin-top: 24px; }
-.text-muted   { color: rgba(212,175,55,0.4) !important; }
+.text-muted   { color: rgba(200,0,17,0.4) !important; }
 .text-success { color: var(--success) !important; }
 .text-danger  { color: var(--danger) !important; }
 .text-usdt    { color: #2ECC9F !important; }
-.text-gold    { color: var(--gold) !important; }
+.text-gold    { color: var(--red) !important; }
 .fs-sm  { font-size: 0.82rem; }
 .fs-xs  { font-size: 0.72rem; }
 .fw-600 { font-weight: 600; }

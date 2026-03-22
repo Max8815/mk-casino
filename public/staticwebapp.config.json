@@ -1,0 +1,14 @@
+{
+  "navigationFallback": {
+    "rewrite": "index.html",
+    "exclude": ["/static/media/*.{png,jpg,jpeg,gif,svg}", "/static/css/*", "/static/js/*"]
+  },
+  "routes": [
+    {
+      "route": "/static/*",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      }
+    }
+  ]
+}

@@ -426,7 +426,7 @@ const Roulette = () => {
                             <div className="card mb-3">
                                 <div className="card-header"><h4>Outside Bets</h4></div>
                                 <div className="card-body">
-                                    <div className="bet-section-title">Color · Even/Odd · High/Low <span style={{ color: 'var(--primary)' }}>2x</span></div>
+                                    <div className="bet-section-title">Color · Even/Odd · High/Low <span style={{ color: 'var(--red)' }}>2x</span></div>
                                     <div className="bet-options-grid mb-3">
                                         <button className={`bet-btn red-btn ${isBetSelected('red') ? 'selected' : ''}`} onClick={() => toggleBet('red')} disabled={spinning}>🔴 Red</button>
                                         <button className={`bet-btn black-btn ${isBetSelected('black') ? 'selected' : ''}`} onClick={() => toggleBet('black')} disabled={spinning}>⚫ Black</button>
@@ -436,7 +436,7 @@ const Roulette = () => {
                                         <button className={`bet-btn ${isBetSelected('19-36') ? 'selected' : ''}`} onClick={() => toggleBet('19-36')} disabled={spinning}>19–36</button>
                                     </div>
 
-                                    <div className="bet-section-title">Dozens · Columns <span style={{ color: 'var(--primary)' }}>3x</span></div>
+                                    <div className="bet-section-title">Dozens · Columns <span style={{ color: 'var(--red)' }}>3x</span></div>
                                     <div className="bet-options-grid">
                                         {['dozen1','dozen2','dozen3','col1','col2','col3'].map(id => {
                                             const b = BET_TYPES.find(x => x.id === id);
@@ -483,7 +483,7 @@ const Roulette = () => {
                                             className="quick-btn"
                                             onClick={() => setBetAmount(String(Math.floor(balance / 2)))}
                                             disabled={spinning}
-                                            style={{ borderColor: 'var(--primary)', color: 'var(--primary)' }}
+                                            style={{ borderColor: 'var(--red)', color: 'var(--red)' }}
                                         >
                                             ½ Balance
                                         </button>
@@ -610,13 +610,13 @@ const Roulette = () => {
                         <div style={{
                             marginTop: 16,
                             padding: 12,
-                            background: 'rgba(201,168,76,0.08)',
-                            border: '1px solid rgba(201,168,76,0.3)',
+                            background: 'rgba(200,0,17,0.08)',
+                            border: '1px solid rgba(200,0,17,0.3)',
                             borderRadius: 10,
                             fontSize: '0.78rem',
                             color: 'var(--text-muted)',
                         }}>
-                            ⚠️ Only send <strong style={{ color: 'var(--primary)' }}>USDT TRC-20</strong> to this address.
+                            ⚠️ Only send <strong style={{ color: 'var(--red)' }}>USDT TRC-20</strong> to this address.
                             Sending other tokens may result in permanent loss.
                             Minimum deposit: <strong>10 USDT</strong>.
                         </div>

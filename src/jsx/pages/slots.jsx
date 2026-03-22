@@ -107,9 +107,9 @@ const Reel = ({ strip, targetIndex, spinning, delay, onDone }) => {
                 top: SYMBOL_HEIGHT * PAYLINE_INDEX,
                 left: 0, right: 0,
                 height: SYMBOL_HEIGHT,
-                background: 'rgba(201,168,76,0.07)',
-                borderTop: '2px solid rgba(201,168,76,0.4)',
-                borderBottom: '2px solid rgba(201,168,76,0.4)',
+                background: 'rgba(200,0,17,0.07)',
+                borderTop: '2px solid rgba(200,0,17,0.4)',
+                borderBottom: '2px solid rgba(200,0,17,0.4)',
                 zIndex: 2,
                 pointerEvents: 'none',
             }} />
@@ -263,14 +263,14 @@ const Slots = () => {
                     {/* Jackpot Banner */}
                     {isJackpot && (
                         <div style={{
-                            background: 'linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05))',
+                            background: 'linear-gradient(135deg, rgba(200,0,17,0.2), rgba(200,0,17,0.05))',
                             border: '1px solid var(--primary)',
                             borderRadius: 14, padding: '18px 24px',
                             textAlign: 'center', marginBottom: 20,
                             animation: 'slideIn 0.4s ease',
                         }}>
                             <div style={{ fontSize: '2rem', marginBottom: 6 }}>🏆 JACKPOT! 🏆</div>
-                            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary)' }}>
+                            <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--red)' }}>
                                 +{lastWin.winnings.toFixed(2)} USDT
                             </div>
                             <div className="text-muted fs-sm">Three Formula 1 cars! 100x payout!</div>
@@ -305,15 +305,15 @@ const Slots = () => {
 
                                     {/* Machine frame */}
                                     <div style={{
-                                        background: 'linear-gradient(180deg, #0f0f1a 0%, #1a1a2e 100%)',
-                                        border: '2px solid rgba(201,168,76,0.4)',
+                                        background: 'linear-gradient(180deg, #040000 0%, #0A0000 100%)',
+                                        border: '2px solid rgba(200,0,17,0.4)',
                                         borderRadius: 20,
                                         padding: '28px 24px',
-                                        boxShadow: '0 0 40px rgba(201,168,76,0.1), inset 0 0 40px rgba(0,0,0,0.5)',
+                                        boxShadow: '0 0 40px rgba(200,0,17,0.1), inset 0 0 40px rgba(0,0,0,0.5)',
                                     }}>
                                         {/* Machine top */}
                                         <div style={{ textAlign: 'center', marginBottom: 20 }}>
-                                            <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--primary)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+                                            <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--red)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
                                                 🏎️ &nbsp;MK Car Slots&nbsp; 🏎️
                                             </div>
                                         </div>
@@ -342,9 +342,9 @@ const Slots = () => {
                                                 display: 'inline-block',
                                                 padding: '4px 16px',
                                                 borderRadius: 20,
-                                                background: 'rgba(201,168,76,0.12)',
-                                                border: '1px solid rgba(201,168,76,0.3)',
-                                                color: 'var(--primary)',
+                                                background: 'rgba(200,0,17,0.12)',
+                                                border: '1px solid rgba(200,0,17,0.3)',
+                                                color: 'var(--red)',
                                                 fontSize: '0.72rem',
                                                 fontWeight: 700,
                                                 letterSpacing: '0.1em',
@@ -392,7 +392,7 @@ const Slots = () => {
                                                     <td style={{ fontSize: '1.4rem' }}>{s.emoji}</td>
                                                     <td className="fs-sm">{s.label}</td>
                                                     <td>
-                                                        <span style={{ color: 'var(--primary)', fontWeight: 700 }}>
+                                                        <span style={{ color: 'var(--red)', fontWeight: 700 }}>
                                                             {s.payout3}x
                                                         </span>
                                                     </td>
@@ -439,7 +439,7 @@ const Slots = () => {
                                             className="quick-btn"
                                             onClick={() => setBetAmount(String(Math.floor(balance / 2)))}
                                             disabled={spinning}
-                                            style={{ borderColor: 'var(--primary)', color: 'var(--primary)' }}
+                                            style={{ borderColor: 'var(--red)', color: 'var(--red)' }}
                                         >
                                             ½
                                         </button>
@@ -456,7 +456,7 @@ const Slots = () => {
                                         </div>
                                         <div className="d-flex justify-content-between">
                                             <span className="text-muted">Max win (100x):</span>
-                                            <span style={{ color: 'var(--primary)', fontWeight: 700 }}>{(bet * 100).toFixed(2)} USDT</span>
+                                            <span style={{ color: 'var(--red)', fontWeight: 700 }}>{(bet * 100).toFixed(2)} USDT</span>
                                         </div>
                                     </div>
                                 </div>
@@ -556,8 +556,8 @@ const Slots = () => {
                         <button className="copy-btn" onClick={copyAddress}>
                             {copied ? '✅ Copied!' : '📋 Copy Address'}
                         </button>
-                        <div style={{ marginTop: 16, padding: 12, background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 10, fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                            ⚠️ Only send <strong style={{ color: 'var(--primary)' }}>USDT TRC-20</strong>. Min: <strong>10 USDT</strong>.
+                        <div style={{ marginTop: 16, padding: 12, background: 'rgba(200,0,17,0.06)', border: '1px solid rgba(200,0,17,0.2)', borderRadius: 10, fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                            ⚠️ Only send <strong style={{ color: 'var(--red)' }}>USDT TRC-20</strong>. Min: <strong>10 USDT</strong>.
                         </div>
                         <div style={{ marginTop: 20, borderTop: '1px solid var(--border)', paddingTop: 16 }}>
                             <p className="fs-sm text-muted mb-2">Demo — add funds:</p>

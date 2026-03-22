@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Header from '../layout/header';
 import Sidebar from '../layout/sidebar';
 
-// ─── ROULETTE CONSTANTS ───────────────────────────────────────
 const WHEEL_ORDER = [
     0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10,
     5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26
@@ -53,20 +52,16 @@ const checkWin = (betId, result) => {
         case 'col1': return n !== 0 && n % 3 === 1;
         case 'col2': return n !== 0 && n % 3 === 2;
         case 'col3': return n !== 0 && n % 3 === 0;
-        default:
-            // straight number bet
-            return parseInt(betId) === n;
+        default: return parseInt(betId) === n;
     }
 };
 
 const getPayout = (betId, betAmount) => {
     const found = BET_TYPES.find(b => b.id === betId);
     if (found) return betAmount * found.payout;
-    // straight number = 36x
     return betAmount * 36;
 };
 
-// ─── DRAW WHEEL ON CANVAS ───────────────────────────────────────
 const drawWheel = (canvas, rotation = 0) => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -79,7 +74,6 @@ const drawWheel = (canvas, rotation = 0) => {
 
     ctx.clearRect(0, 0, size, size);
 
-    // outer ring (dark)
     ctx.beginPath();
     ctx.arc(cx, cy, outerR + 3, 0, Math.PI * 2);
     ctx.fillStyle = '#0d0d17';
@@ -90,7 +84,6 @@ const drawWheel = (canvas, rotation = 0) => {
         const endAngle = startAngle + segAngle;
         const color = getColor(num);
 
-        // fill segment
         ctx.beginPath();
         ctx.moveTo(cx, cy);
         ctx.arc(cx, cy, outerR, startAngle, endAngle);
@@ -98,12 +91,10 @@ const drawWheel = (canvas, rotation = 0) => {
         ctx.fillStyle = SEGMENT_COLORS[color];
         ctx.fill();
 
-        // segment border
-        ctx.strokeStyle = '#c9a84c';
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
         ctx.lineWidth = 0.5;
         ctx.stroke();
 
-        // number text
         const midAngle = startAngle + segAngle / 2;
         const textR = outerR * 0.75;
         const tx = cx + textR * Math.cos(midAngle);
@@ -113,30 +104,27 @@ const drawWheel = (canvas, rotation = 0) => {
         ctx.translate(tx, ty);
         ctx.rotate(midAngle + Math.PI / 2);
         ctx.fillStyle = '#fff';
-        ctx.font = `bold ${Math.max(8, size * 0.032)}px Poppins, sans-serif`;
+        ctx.font = `bold ${Math.max(8, size * 0.032)}px Inter, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(String(num), 0, 0);
         ctx.restore();
     });
 
-    // inner circle
     ctx.beginPath();
     ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
     ctx.fillStyle = '#0d0d17';
     ctx.fill();
-    ctx.strokeStyle = '#c9a84c';
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // center emoji
     ctx.font = `${innerR * 0.9}px serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('🎰', cx, cy);
+    ctx.fillText('◉', cx, cy);
 };
 
-// ─── ROULETTE PAGE ───────────────────────────────────────────────
 const INITIAL_BALANCE = 1000;
 
 const Roulette = () => {
@@ -146,33 +134,24 @@ const Roulette = () => {
 
     const [balance, setBalance] = useState(INITIAL_BALANCE);
     const [betAmount, setBetAmount] = useState('10');
-    const [selectedBets, setSelectedBets] = useState([]); // [{id, amount}]
+    const [selectedBets, setSelectedBets] = useState([]);
     const [spinning, setSpinning] = useState(false);
-    const [result, setResult] = useState(null); // {number, color}
+    const [result, setResult] = useState(null);
     const [lastResult, setLastResult] = useState(null);
     const [history, setHistory] = useState([]);
     const [showDeposit, setShowDeposit] = useState(false);
     const [copied, setCopied] = useState(false);
 
-    // total bet across all selected bets
     const totalBet = selectedBets.reduce((s, b) => s + b.amount, 0);
 
-    // ── Draw initial wheel
-    useEffect(() => {
-        drawWheel(canvasRef.current, 0);
-    }, []);
+    useEffect(() => { drawWheel(canvasRef.current, 0); }, []);
 
-    // ── Animate spin
     const animateSpin = useCallback((targetRotation, onComplete) => {
         const startRot = rotationRef.current;
         const totalChange = targetRotation - startRot;
-        const duration = 4000; // ms
+        const duration = 4000;
         const startTime = performance.now();
-
-        const ease = (t) => {
-            // ease-out cubic
-            return 1 - Math.pow(1 - t, 3);
-        };
+        const ease = t => 1 - Math.pow(1 - t, 3);
 
         const frame = (now) => {
             const elapsed = now - startTime;
@@ -181,51 +160,35 @@ const Roulette = () => {
             const currentRot = startRot + totalChange * eased;
             rotationRef.current = currentRot;
             drawWheel(canvasRef.current, currentRot);
-
             if (progress < 1) {
                 rafRef.current = requestAnimationFrame(frame);
             } else {
                 onComplete();
             }
         };
-
         rafRef.current = requestAnimationFrame(frame);
     }, []);
 
     const handleSpin = () => {
-        if (spinning) return;
-        if (selectedBets.length === 0) return;
-        if (totalBet > balance) return;
-
+        if (spinning || selectedBets.length === 0 || totalBet > balance) return;
         setSpinning(true);
         setResult(null);
-
-        // Deduct bet
         setBalance(prev => +(prev - totalBet).toFixed(2));
 
-        // Pick random result
         const resultIndex = Math.floor(Math.random() * WHEEL_ORDER.length);
         const resultNumber = WHEEL_ORDER[resultIndex];
         const resultColor = getColor(resultNumber);
 
-        // Calculate target rotation so winning segment ends under pointer
-        // Pointer is at top (-PI/2). segment i is at: rotation + i * segAngle - PI/2
-        // We want segment resultIndex to be at 0 (top), so:
-        // rotation + resultIndex * segAngle - PI/2 = -PI/2 + segAngle/2
-        // => rotation = - resultIndex * segAngle + segAngle/2
         const segAngle = (2 * Math.PI) / WHEEL_ORDER.length;
         const targetBaseRot = -resultIndex * segAngle + segAngle / 2;
-
-        // Add multiple full spins (5-8 rotations for drama)
         const fullSpins = (5 + Math.floor(Math.random() * 4)) * 2 * Math.PI;
         const targetRotation = targetBaseRot + fullSpins;
 
         animateSpin(targetRotation, () => {
-            rotationRef.current = targetBaseRot; // normalize
+            rotationRef.current = targetBaseRot;
             drawWheel(canvasRef.current, targetBaseRot);
             setSpinning(false);
 
-            // Evaluate bets
             let totalWin = 0;
             const betResults = selectedBets.map(bet => {
                 const won = checkWin(bet.id, resultNumber);
@@ -235,7 +198,6 @@ const Roulette = () => {
             });
 
             const netResult = totalWin - totalBet;
-
             setBalance(prev => +(prev + totalWin).toFixed(2));
 
             const historyEntry = {
@@ -259,19 +221,14 @@ const Roulette = () => {
         if (spinning) return;
         const amount = parseFloat(betAmount) || 0;
         if (amount <= 0) return;
-
         setSelectedBets(prev => {
             const existing = prev.find(b => b.id === betId);
-            if (existing) {
-                return prev.filter(b => b.id !== betId);
-            }
+            if (existing) return prev.filter(b => b.id !== betId);
             return [...prev, { id: betId, amount }];
         });
     };
 
-    const clearBets = () => {
-        if (!spinning) setSelectedBets([]);
-    };
+    const clearBets = () => { if (!spinning) setSelectedBets([]); };
 
     const copyAddress = () => {
         navigator.clipboard.writeText('TGBtzWDkAAfWKqmH9YJEomtHtFZNgXAb7K');
@@ -295,32 +252,24 @@ const Roulette = () => {
             <div className="content-body">
                 <div className="content-inner">
 
-                    {/* Page Title */}
-                    <div className="d-flex align-items-center justify-content-between mb-4">
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
                         <div>
-                            <h3 style={{ margin: 0, fontWeight: 700, fontSize: '1.4rem', color: '#fff' }}>
-                                🎡 European Roulette
-                            </h3>
-                            <p className="text-muted fs-sm mb-0" style={{ marginTop: 4 }}>
-                                Place your bets in USDT · Single Zero · European Rules
-                            </p>
+                            <h3 style={{ margin: 0, fontWeight: 800, fontSize: '1.3rem', color: 'var(--white)' }}>Roulette</h3>
+                            <p style={{ color: 'var(--muted)', fontSize: '0.78rem', marginTop: 2, marginBottom: 0 }}>European · Single Zero</p>
                         </div>
                         {lastResult && (
                             <div style={{ textAlign: 'center' }}>
-                                <div className="text-muted fs-sm mb-0">Last Number</div>
-                                <div className={`num-badge ${lastResult.color}`} style={{ width: 42, height: 42, fontSize: '1rem', margin: '4px auto 0' }}>
-                                    {lastResult.number}
-                                </div>
+                                <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)', marginBottom: 2 }}>Last</div>
+                                <span className={`num-badge ${lastResult.color}`} style={{ width: 36, height: 36, fontSize: '0.9rem' }}>{lastResult.number}</span>
                             </div>
                         )}
                     </div>
 
-                    {/* Stats */}
                     {stats && (
-                        <div className="stats-grid">
+                        <div className="stats-grid" style={{ marginBottom: 16 }}>
                             <div className="stat-card">
                                 <div className="stat-label">Balance</div>
-                                <div className="stat-value usdt">{balance.toFixed(2)} USDT</div>
+                                <div className="stat-value usdt">{balance.toFixed(2)}</div>
                             </div>
                             <div className="stat-card">
                                 <div className="stat-label">Wins</div>
@@ -331,317 +280,149 @@ const Roulette = () => {
                                 <div className="stat-value negative">{stats.losses}</div>
                             </div>
                             <div className="stat-card">
-                                <div className="stat-label">Total P&L</div>
+                                <div className="stat-label">P&L</div>
                                 <div className={`stat-value ${parseFloat(stats.totalProfit) >= 0 ? 'positive' : 'negative'}`}>
-                                    {parseFloat(stats.totalProfit) >= 0 ? '+' : ''}{stats.totalProfit} USDT
+                                    {parseFloat(stats.totalProfit) >= 0 ? '+' : ''}{stats.totalProfit}
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* Result Alert */}
                     {result && (
                         <div className={`result-alert ${result.net >= 0 ? 'win' : 'lose'}`}>
-                            <span className="result-alert-icon">{result.net >= 0 ? '🏆' : '😔'}</span>
+                            <span className="result-alert-icon">{result.net >= 0 ? '↑' : '↓'}</span>
                             <div className="result-alert-text">
-                                <h5>
-                                    {result.net >= 0
-                                        ? `You won ${result.totalWin.toFixed(2)} USDT!`
-                                        : `No luck this time`}
-                                </h5>
-                                <p>
-                                    Ball landed on <strong style={{ color: result.color === 'red' ? '#e74c3c' : result.color === 'green' ? '#2ecc71' : '#ccc' }}>
-                                        {result.number}
-                                    </strong> ({result.color}) &nbsp;·&nbsp;
-                                    Net: {result.net >= 0 ? '+' : ''}{result.net.toFixed(2)} USDT
-                                </p>
+                                <h5>{result.net >= 0 ? `Won ${result.totalWin.toFixed(2)} USDT` : 'No luck this time'}</h5>
+                                <p>Ball landed <strong style={{ color: result.color === 'red' ? '#ff6b6b' : result.color === 'green' ? '#fff' : '#fff' }}>{result.number} ({result.color})</strong> · Net: {result.net >= 0 ? '+' : ''}{result.net.toFixed(2)} USDT</p>
                             </div>
                         </div>
                     )}
 
-                    {/* Main Layout */}
                     <div className="row">
-                        {/* LEFT: Wheel */}
                         <div className="col-xl-7">
-                            <div className="card mb-4">
-                                <div className="card-body" style={{ display: 'flex', justifyContent: 'center', padding: '32px 24px' }}>
-                                    <div style={{ position: 'relative', display: 'inline-block' }}>
-                                        {/* Pointer */}
-                                        <div style={{
-                                            position: 'absolute',
-                                            top: -14,
-                                            left: '50%',
-                                            transform: 'translateX(-50%)',
-                                            width: 0, height: 0,
-                                            borderLeft: '10px solid transparent',
-                                            borderRight: '10px solid transparent',
-                                            borderTop: '20px solid #c9a84c',
-                                            zIndex: 10,
-                                            filter: 'drop-shadow(0 0 6px #c9a84c)',
-                                        }} />
-                                        <canvas
-                                            ref={canvasRef}
-                                            width={320}
-                                            height={320}
-                                            className="roulette-canvas"
-                                        />
-                                    </div>
+                            <div className="card" style={{ marginBottom: 16 }}>
+                                <div className="card-body" style={{ display: 'flex', justifyContent: 'center', padding: '28px 20px' }}>
+                                    <canvas ref={canvasRef} width={300} height={300} className="roulette-canvas" />
                                 </div>
                             </div>
 
-                            {/* Number Grid */}
                             <div className="card">
-                                <div className="card-header">
-                                    <h4>Straight Number Bets <span style={{ color: 'var(--text-muted)', fontSize: '0.78rem', fontWeight: 400 }}>· 36x payout</span></h4>
-                                </div>
+                                <div className="card-header"><h4>Numbers <span style={{ color: 'var(--muted)', fontWeight: 400 }}>36x</span></h4></div>
                                 <div className="card-body">
                                     <div className="number-grid">
-                                        {/* Zero */}
-                                        <button
-                                            className={`number-btn num-zero ${isBetSelected('0') ? 'selected' : ''}`}
-                                            onClick={() => toggleBet('0')}
-                                            disabled={spinning}
-                                        >
-                                            0
-                                        </button>
-                                        {/* 1–36 */}
+                                        <button className={`number-btn num-zero ${isBetSelected('0') ? 'selected' : ''}`} onClick={() => toggleBet('0')} disabled={spinning}>0</button>
                                         {Array.from({ length: 36 }, (_, i) => i + 1).map(n => (
-                                            <button
-                                                key={n}
-                                                className={`number-btn ${RED_NUMBERS.includes(n) ? 'num-red' : 'num-black'} ${isBetSelected(String(n)) ? 'selected' : ''}`}
-                                                onClick={() => toggleBet(String(n))}
-                                                disabled={spinning}
-                                            >
-                                                {n}
-                                            </button>
+                                            <button key={n} className={`number-btn ${RED_NUMBERS.includes(n) ? 'num-red' : 'num-black'} ${isBetSelected(String(n)) ? 'selected' : ''}`} onClick={() => toggleBet(String(n))} disabled={spinning}>{n}</button>
                                         ))}
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* RIGHT: Betting Controls */}
                         <div className="col-xl-5">
-                            {/* Outside Bets */}
-                            <div className="card mb-3">
+                            <div className="card" style={{ marginBottom: 12 }}>
                                 <div className="card-header"><h4>Outside Bets</h4></div>
                                 <div className="card-body">
-                                    <div className="bet-section-title">Color · Even/Odd · High/Low <span style={{ color: '#E8000F' }}>2x</span></div>
+                                    <div className="bet-section-title">Color · Even/Odd · Range <span style={{ color: 'var(--red)' }}>2x</span></div>
                                     <div className="bet-options-grid mb-3">
-                                        <button className={`bet-btn red-btn ${isBetSelected('red') ? 'selected' : ''}`} onClick={() => toggleBet('red')} disabled={spinning}>🔴 Red</button>
-                                        <button className={`bet-btn black-btn ${isBetSelected('black') ? 'selected' : ''}`} onClick={() => toggleBet('black')} disabled={spinning}>⚫ Black</button>
+                                        <button className={`bet-btn red-btn ${isBetSelected('red') ? 'selected' : ''}`} onClick={() => toggleBet('red')} disabled={spinning}>Red</button>
+                                        <button className={`bet-btn black-btn ${isBetSelected('black') ? 'selected' : ''}`} onClick={() => toggleBet('black')} disabled={spinning}>Black</button>
                                         <button className={`bet-btn ${isBetSelected('even') ? 'selected' : ''}`} onClick={() => toggleBet('even')} disabled={spinning}>Even</button>
                                         <button className={`bet-btn ${isBetSelected('odd') ? 'selected' : ''}`} onClick={() => toggleBet('odd')} disabled={spinning}>Odd</button>
                                         <button className={`bet-btn ${isBetSelected('1-18') ? 'selected' : ''}`} onClick={() => toggleBet('1-18')} disabled={spinning}>1–18</button>
                                         <button className={`bet-btn ${isBetSelected('19-36') ? 'selected' : ''}`} onClick={() => toggleBet('19-36')} disabled={spinning}>19–36</button>
                                     </div>
-
-                                    <div className="bet-section-title">Dozens · Columns <span style={{ color: '#E8000F' }}>3x</span></div>
+                                    <div className="bet-section-title">Dozens · Columns <span style={{ color: 'var(--red)' }}>3x</span></div>
                                     <div className="bet-options-grid">
                                         {['dozen1','dozen2','dozen3','col1','col2','col3'].map(id => {
                                             const b = BET_TYPES.find(x => x.id === id);
-                                            return (
-                                                <button
-                                                    key={id}
-                                                    className={`bet-btn ${isBetSelected(id) ? 'selected' : ''}`}
-                                                    onClick={() => toggleBet(id)}
-                                                    disabled={spinning}
-                                                >
-                                                    {b.label}
-                                                </button>
-                                            );
+                                            return <button key={id} className={`bet-btn ${isBetSelected(id) ? 'selected' : ''}`} onClick={() => toggleBet(id)} disabled={spinning}>{b.label}</button>;
                                         })}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Bet Amount */}
-                            <div className="card mb-3">
-                                <div className="card-header"><h4>Bet Amount (per selection)</h4></div>
+                            <div className="card" style={{ marginBottom: 12 }}>
+                                <div className="card-header"><h4>Bet Amount</h4></div>
                                 <div className="card-body">
                                     <div className="amount-input-wrapper">
                                         <span className="amount-currency">USDT</span>
-                                        <input
-                                            type="number"
-                                            className="amount-input"
-                                            value={betAmount}
-                                            min="1"
-                                            step="1"
-                                            onChange={e => setBetAmount(e.target.value)}
-                                            disabled={spinning}
-                                            placeholder="0.00"
-                                        />
+                                        <input type="number" className="amount-input" value={betAmount} min="1" step="1" onChange={e => setBetAmount(e.target.value)} disabled={spinning} placeholder="0.00" />
                                     </div>
-
                                     <div className="quick-amounts">
                                         {[5, 10, 25, 50, 100].map(v => (
-                                            <button key={v} className="quick-btn" onClick={() => setBetAmount(String(v))} disabled={spinning}>
-                                                {v}
-                                            </button>
+                                            <button key={v} className="quick-btn" onClick={() => setBetAmount(String(v))} disabled={spinning}>{v}</button>
                                         ))}
-                                        <button
-                                            className="quick-btn"
-                                            onClick={() => setBetAmount(String(Math.floor(balance / 2)))}
-                                            disabled={spinning}
-                                            style={{ borderColor: 'var(--red)', color: '#E8000F' }}
-                                        >
-                                            ½ Balance
-                                        </button>
                                     </div>
-
                                     {selectedBets.length > 0 && (
-                                        <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--bg-card2)', borderRadius: 10, fontSize: '0.82rem' }}>
-                                            <div className="d-flex justify-content-between mb-0">
+                                        <div style={{ marginTop: 12, padding: '10px 12px', background: 'var(--card2)', borderRadius: 'var(--radius)', fontSize: '0.8rem' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                                 <span className="text-muted">Selections:</span>
-                                                <span>{selectedBets.length} bet{selectedBets.length > 1 ? 's' : ''}</span>
+                                                <span>{selectedBets.length}</span>
                                             </div>
-                                            <div className="d-flex justify-content-between">
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
                                                 <span className="text-muted">Total stake:</span>
-                                                <span style={{ color: 'var(--usdt)', fontWeight: 700 }}>{totalBet.toFixed(2)} USDT</span>
+                                                <span style={{ color: 'var(--white)', fontWeight: 700 }}>{totalBet.toFixed(2)} USDT</span>
                                             </div>
                                         </div>
                                     )}
                                 </div>
                             </div>
 
-                            {/* Actions */}
-                            <button
-                                className="spin-btn"
-                                onClick={handleSpin}
-                                disabled={spinning || selectedBets.length === 0 || totalBet > balance}
-                            >
-                                {spinning ? '⏳ Spinning...' : '🎰 Spin the Wheel'}
+                            <button className="spin-btn" onClick={handleSpin} disabled={spinning || selectedBets.length === 0 || totalBet > balance}>
+                                {spinning ? 'Spinning...' : 'Spin'}
                             </button>
-
-                            {totalBet > balance && (
-                                <p style={{ color: 'var(--danger)', fontSize: '0.78rem', textAlign: 'center', marginTop: 8 }}>
-                                    Insufficient balance. Please deposit USDT.
-                                </p>
-                            )}
-
-                            <button className="clear-btn" onClick={clearBets} disabled={spinning}>
-                                Clear All Bets
-                            </button>
+                            {totalBet > balance && <p style={{ color: 'var(--red)', fontSize: '0.75rem', textAlign: 'center', marginTop: 6 }}>Insufficient balance.</p>}
+                            <button className="clear-btn" onClick={clearBets} disabled={spinning}>Clear Bets</button>
                         </div>
                     </div>
 
-                    {/* History */}
                     {history.length > 0 && (
                         <div className="card mt-4">
                             <div className="card-header">
-                                <h4>Bet History</h4>
+                                <h4>History</h4>
                                 <span className="text-muted fs-sm">{history.length} rounds</span>
                             </div>
                             <div className="card-body" style={{ padding: 0 }}>
-                                <div style={{ overflowX: 'auto' }}>
-                                    <table className="history-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Time</th>
-                                                <th>Number</th>
-                                                <th>Bets Placed</th>
-                                                <th>Stake</th>
-                                                <th>Payout</th>
-                                                <th>Net</th>
+                                <table className="history-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Number</th>
+                                            <th>Bets</th>
+                                            <th>Stake</th>
+                                            <th>Net</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {history.map(h => (
+                                            <tr key={h.id}>
+                                                <td className="text-muted fs-sm">{h.time}</td>
+                                                <td><span className={`num-badge ${h.color}`}>{h.number}</span></td>
+                                                <td className="fs-sm">{h.bets.map((b, i) => <span key={i} style={{ marginRight: 4, padding: '2px 7px', borderRadius: 4, background: b.won ? 'rgba(232,0,15,0.08)' : 'rgba(255,255,255,0.04)', border: `1px solid ${b.won ? 'rgba(232,0,15,0.2)' : 'var(--border)'}`, color: b.won ? 'var(--white)' : 'var(--muted)', fontSize: '0.72rem', fontWeight: 600 }}>{b.id}</span>)}</td>
+                                                <td className="text-muted fs-sm">{h.totalBet.toFixed(2)}</td>
+                                                <td><span className={h.net >= 0 ? 'win-badge' : 'lose-badge'}>{h.net >= 0 ? '+' : ''}{h.net.toFixed(2)}</span></td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            {history.map(h => (
-                                                <tr key={h.id}>
-                                                    <td className="text-muted fs-sm">{h.time}</td>
-                                                    <td>
-                                                        <span className={`num-badge ${h.color}`}>
-                                                            {h.number}
-                                                        </span>
-                                                    </td>
-                                                    <td className="fs-sm">
-                                                        {h.bets.map((b, i) => (
-                                                            <span key={i} style={{
-                                                                display: 'inline-block',
-                                                                marginRight: 4,
-                                                                padding: '2px 8px',
-                                                                borderRadius: 6,
-                                                                background: b.won ? 'rgba(52,195,143,0.1)' : 'rgba(244,106,106,0.08)',
-                                                                border: `1px solid ${b.won ? 'var(--success)' : 'rgba(244,106,106,0.3)'}`,
-                                                                color: b.won ? 'var(--success)' : 'var(--text-muted)',
-                                                                fontSize: '0.73rem',
-                                                                fontWeight: 600,
-                                                            }}>
-                                                                {b.id}
-                                                            </span>
-                                                        ))}
-                                                    </td>
-                                                    <td className="text-muted fs-sm">{h.totalBet.toFixed(2)} USDT</td>
-                                                    <td className="fs-sm" style={{ color: h.totalWin > 0 ? 'var(--success)' : 'var(--text-muted)' }}>
-                                                        {h.totalWin.toFixed(2)} USDT
-                                                    </td>
-                                                    <td>
-                                                        <span className={h.net >= 0 ? 'win-badge' : 'lose-badge'}>
-                                                            {h.net >= 0 ? '+' : ''}{h.net.toFixed(2)}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Deposit Modal */}
             {showDeposit && (
                 <div className="modal-overlay" onClick={() => setShowDeposit(false)}>
                     <div className="modal-box" onClick={e => e.stopPropagation()}>
                         <button className="modal-close" onClick={() => setShowDeposit(false)}>✕</button>
-                        <h3 className="modal-title">💳 Deposit USDT (TRC-20)</h3>
-                        <p className="text-muted fs-sm mb-3">Send USDT on the TRON network (TRC-20) to this address:</p>
-
-                        <div className="deposit-address-box">
-                            TGBtzWDkAAfWKqmH9YJEomtHtFZNgXAb7K
-                        </div>
-
-                        <button className="copy-btn" onClick={copyAddress}>
-                            {copied ? '✅ Copied!' : '📋 Copy Address'}
-                        </button>
-
-                        <div style={{
-                            marginTop: 16,
-                            padding: 12,
-                            background: 'rgba(255,255,255,0.08)',
-                            border: '1px solid rgba(255,255,255,0.3)',
-                            borderRadius: 10,
-                            fontSize: '0.78rem',
-                            color: 'var(--text-muted)',
-                        }}>
-                            ⚠️ Only send <strong style={{ color: '#E8000F' }}>USDT TRC-20</strong> to this address.
-                            Sending other tokens may result in permanent loss.
-                            Minimum deposit: <strong>10 USDT</strong>.
-                        </div>
-
-                        {/* Demo add funds */}
-                        <div style={{ marginTop: 20, borderTop: '1px solid var(--border)', paddingTop: 16 }}>
-                            <p className="fs-sm text-muted mb-2">Demo mode — add funds instantly:</p>
-                            <div style={{ display: 'flex', gap: 8 }}>
-                                {[100, 500, 1000].map(v => (
-                                    <button
-                                        key={v}
-                                        onClick={() => { setBalance(prev => +(prev + v).toFixed(2)); setShowDeposit(false); }}
-                                        style={{
-                                            flex: 1, padding: '8px 0', borderRadius: 8,
-                                            border: '1px solid var(--usdt)',
-                                            background: 'rgba(38,161,123,0.1)',
-                                            color: 'var(--usdt)', fontWeight: 700,
-                                            fontSize: '0.85rem', cursor: 'pointer',
-                                            fontFamily: 'Poppins, sans-serif',
-                                        }}
-                                    >
-                                        +{v}
-                                    </button>
-                                ))}
-                            </div>
+                        <h3 className="modal-title">Deposit USDT</h3>
+                        <div className="deposit-address-box">TGBtzWDkAAfWKqmH9YJEomtHtFZNgXAb7K</div>
+                        <button className="copy-btn" onClick={copyAddress}>{copied ? 'Copied!' : 'Copy Address'}</button>
+                        <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
+                            {[100, 500, 1000].map(v => (
+                                <button key={v} onClick={() => { setBalance(prev => +(prev + v).toFixed(2)); setShowDeposit(false); }} style={{ flex: 1, padding: '8px 0', borderRadius: 'var(--radius)', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.04)', color: 'var(--white)', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'var(--font)' }}>+{v}</button>
+                            ))}
                         </div>
                     </div>
                 </div>

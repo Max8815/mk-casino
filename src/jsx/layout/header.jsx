@@ -2,17 +2,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Header = ({ usdtBalance, onDeposit, username }) => {
-    const initials = username
-        ? username.slice(0, 2).toUpperCase()
-        : 'MK';
+    const initials = username ? username.slice(0, 2).toUpperCase() : 'MK';
 
     return (
         <div className="header">
             <div className="header-content">
                 <div className="header-left">
                     <Link to="/" className="brand-logo">
-                        <span className="logo-icon">🎰</span>
-                        <span className="gold-text-static">MK Casino</span>
+                        <span className="logo-icon">MK</span>
+                        <span>CASINO</span>
                     </Link>
                 </div>
 
@@ -23,7 +21,7 @@ const Header = ({ usdtBalance, onDeposit, username }) => {
                     </div>
 
                     <button className="btn-deposit" onClick={onDeposit}>
-                        + Deposit
+                        Deposit
                     </button>
 
                     <div className="user-avatar" title={username}>{initials}</div>

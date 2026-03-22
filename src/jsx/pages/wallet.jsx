@@ -18,88 +18,65 @@ const Wallet = () => {
             <Header usdtBalance={balance} />
             <div className="content-body">
                 <div className="content-inner">
-                    <h3 style={{ margin: '0 0 24px', fontWeight: 700, color: '#fff' }}>💰 Wallet</h3>
+                    <h3 style={{ margin: '0 0 24px', fontWeight: 800, color: 'var(--white)' }}>Wallet</h3>
 
-                    <div className="stats-grid" style={{ marginBottom: 28 }}>
+                    <div className="stats-grid" style={{ marginBottom: 24 }}>
                         <div className="stat-card">
-                            <div className="stat-label">Available Balance</div>
+                            <div className="stat-label">Available</div>
                             <div className="stat-value usdt">{balance.toFixed(2)} USDT</div>
                         </div>
                         <div className="stat-card">
-                            <div className="stat-label">Total Deposited</div>
-                            <div className="stat-value">1,000.00 USDT</div>
+                            <div className="stat-label">Deposited</div>
+                            <div className="stat-value">{balance.toFixed(2)} USDT</div>
                         </div>
                         <div className="stat-card">
-                            <div className="stat-label">Total Withdrawn</div>
+                            <div className="stat-label">Withdrawn</div>
                             <div className="stat-value">0.00 USDT</div>
                         </div>
                     </div>
 
                     <div className="row">
                         <div className="col-xl-5">
-                            <div className="card mb-3">
-                                <div className="card-header"><h4>Deposit USDT (TRC-20)</h4></div>
+                            <div className="card" style={{ marginBottom: 16 }}>
+                                <div className="card-header"><h4>Deposit USDT</h4></div>
                                 <div className="card-body">
-                                    <p className="text-muted fs-sm mb-3">
-                                        Send USDT on the TRON network to this address:
+                                    <p style={{ color: 'var(--muted)', fontSize: '0.82rem', marginBottom: 12 }}>
+                                        Send USDT on TRON (TRC-20):
                                     </p>
-                                    <div className="deposit-address-box">
-                                        TGBtzWDkAAfWKqmH9YJEomtHtFZNgXAb7K
-                                    </div>
+                                    <div className="deposit-address-box">TGBtzWDkAAfWKqmH9YJEomtHtFZNgXAb7K</div>
                                     <button className="copy-btn" onClick={copyAddress}>
-                                        {copied ? '✅ Copied!' : '📋 Copy Address'}
+                                        {copied ? 'Copied!' : 'Copy Address'}
                                     </button>
-                                    <div style={{
-                                        marginTop: 14,
-                                        padding: 12,
-                                        background: 'rgba(255,255,255,0.06)',
-                                        border: '1px solid rgba(255,255,255,0.2)',
-                                        borderRadius: 10,
-                                        fontSize: '0.78rem',
-                                        color: 'var(--text-muted)',
-                                    }}>
-                                        ⚠️ Only send <strong style={{ color: '#E8000F' }}>USDT TRC-20</strong>.
-                                        Min deposit: <strong>10 USDT</strong>. Confirmations: 20 blocks.
+                                    <div style={{ marginTop: 12, fontSize: '0.75rem', color: 'var(--muted)' }}>
+                                        Only USDT TRC-20 · Min: <strong style={{ color: 'var(--white)' }}>10 USDT</strong>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div className="col-xl-5">
-                            <div className="card mb-3">
+                            <div className="card">
                                 <div className="card-header"><h4>Withdraw USDT</h4></div>
                                 <div className="card-body">
-                                    <p className="text-muted fs-sm mb-3">Withdraw to your external wallet.</p>
                                     <div className="amount-input-wrapper mb-3">
                                         <span className="amount-currency">USDT</span>
-                                        <input
-                                            type="number"
-                                            className="amount-input"
-                                            placeholder="Amount"
-                                            min="10"
-                                        />
+                                        <input type="number" className="amount-input" placeholder="Amount" min="10" />
                                     </div>
-                                    <div className="amount-input-wrapper" style={{ marginBottom: 16 }}>
-                                        <span className="amount-currency" style={{ fontSize: '0.72rem', padding: '0 10px' }}>TRC-20</span>
-                                        <input
-                                            type="text"
-                                            className="amount-input"
-                                            placeholder="Your USDT wallet address"
-                                            style={{ fontSize: '0.82rem' }}
-                                        />
+                                    <div className="amount-input-wrapper" style={{ marginBottom: 14 }}>
+                                        <span className="amount-currency" style={{ fontSize: '0.72rem' }}>TRC-20</span>
+                                        <input type="text" className="amount-input" placeholder="Your wallet address" style={{ fontSize: '0.82rem' }} />
                                     </div>
                                     <button style={{
-                                        width: '100%', padding: '12px', borderRadius: 10,
-                                        border: '1.5px solid var(--usdt)',
-                                        background: 'rgba(38,161,123,0.1)',
-                                        color: 'var(--usdt)', fontWeight: 700,
-                                        fontSize: '0.9rem', cursor: 'pointer',
-                                        fontFamily: 'Poppins, sans-serif',
+                                        width: '100%', padding: '11px', borderRadius: 'var(--radius)',
+                                        border: '1px solid rgba(255,255,255,0.15)',
+                                        background: 'rgba(255,255,255,0.04)',
+                                        color: 'var(--white)', fontWeight: 700, fontSize: '0.85rem',
+                                        cursor: 'pointer', fontFamily: 'var(--font)',
                                     }}>
-                                        Request Withdrawal
+                                        Withdraw
                                     </button>
-                                    <p className="text-muted fs-sm mt-2 mb-0" style={{ marginTop: 10 }}>
-                                        Min withdrawal: 10 USDT · Fee: 1 USDT
+                                    <p style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: 10, marginBottom: 0 }}>
+                                        Min: 10 USDT · Fee: 1 USDT
                                     </p>
                                 </div>
                             </div>

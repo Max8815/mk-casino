@@ -90,7 +90,7 @@ const Reel = ({ strip, targetIndex, spinning, delay, onDone }) => {
             overflow: 'hidden',
             position: 'relative',
             borderRadius: 14,
-            background: 'linear-gradient(180deg, #0d0000 0%, #1a0000 100%)',
+            background: 'linear-gradient(180deg, #000 0%, #111 100%)',
             border: '2px solid rgba(200,15,35,0.6)',
             boxShadow: '0 0 20px rgba(200,15,35,0.15)',
         }}>
@@ -306,7 +306,7 @@ const EroticSlots = () => {
 
                                     {/* Machine frame */}
                                     <div style={{
-                                        background: 'linear-gradient(180deg, #0a0000 0%, #120000 100%)',
+                                        background: 'linear-gradient(180deg, #000 0%, #111 100%)',
                                         border: `2px solid ${pinkFaint}0.55)`,
                                         borderRadius: 20,
                                         padding: '28px 24px',

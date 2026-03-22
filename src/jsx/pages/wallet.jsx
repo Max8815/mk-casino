@@ -52,13 +52,13 @@ const Wallet = () => {
                                     <div style={{
                                         marginTop: 14,
                                         padding: 12,
-                                        background: 'rgba(200,0,17,0.06)',
-                                        border: '1px solid rgba(200,0,17,0.2)',
+                                        background: 'rgba(255,255,255,0.06)',
+                                        border: '1px solid rgba(255,255,255,0.2)',
                                         borderRadius: 10,
                                         fontSize: '0.78rem',
                                         color: 'var(--text-muted)',
                                     }}>
-                                        ⚠️ Only send <strong style={{ color: 'var(--red)' }}>USDT TRC-20</strong>.
+                                        ⚠️ Only send <strong style={{ color: '#E8000F' }}>USDT TRC-20</strong>.
                                         Min deposit: <strong>10 USDT</strong>. Confirmations: 20 blocks.
                                     </div>
                                 </div>

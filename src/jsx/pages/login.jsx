@@ -97,7 +97,7 @@ const Login = ({ onLogin }) => {
                     {/* Promo highlight */}
                     <div style={{
                         background: 'linear-gradient(135deg, rgba(200,0,17,0.15), rgba(200,0,17,0.05))',
-                        border: '1px solid rgba(200,0,17,0.5)',
+                        border: '1px solid rgba(255,255,255,0.5)',
                         borderRadius: 20,
                         padding: '22px 26px',
                         marginBottom: 32,
@@ -109,16 +109,16 @@ const Login = ({ onLogin }) => {
                             height: 2,
                             background: 'linear-gradient(90deg, transparent, #CC0011, transparent)',
                         }} />
-                        <div style={{ fontSize: '0.7rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(200,0,17,0.6)', marginBottom: 8 }}>
+                        <div style={{ fontSize: '0.7rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', marginBottom: 8 }}>
                             Welcome Bonus
                         </div>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
                             <span style={{ fontFamily: 'Cinzel, serif', fontSize: '3rem', fontWeight: 900, background: 'linear-gradient(135deg, #FF3344, #CC0011)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                                 $100
                             </span>
-                            <span style={{ color: 'rgba(200,0,17,0.6)', fontSize: '0.85rem', fontWeight: 600 }}>FREE USDT</span>
+                            <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.85rem', fontWeight: 600 }}>FREE USDT</span>
                         </div>
-                        <p style={{ color: 'rgba(200,0,17,0.5)', fontSize: '0.78rem', margin: '6px 0 0', lineHeight: 1.5 }}>
+                        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.78rem', margin: '6px 0 0', lineHeight: 1.5 }}>
                             Credited instantly on registration.<br/>No deposit required to claim.
                         </p>
                     </div>
@@ -187,7 +187,7 @@ const Login = ({ onLogin }) => {
                                 <div style={{
                                     textAlign: 'center',
                                     background: 'linear-gradient(135deg, rgba(200,0,17,0.12), rgba(200,0,17,0.04))',
-                                    border: '1px solid rgba(200,0,17,0.5)',
+                                    border: '1px solid rgba(255,255,255,0.5)',
                                     borderRadius: 18,
                                     padding: '32px 24px',
                                     marginBottom: 20,
@@ -199,24 +199,24 @@ const Login = ({ onLogin }) => {
                                     <h3 style={{ fontFamily: 'Cinzel, serif', color: '#FF3344', fontSize: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
                                         Welcome, {regUsername}!
                                     </h3>
-                                    <p style={{ color: 'rgba(200,0,17,0.5)', fontSize: '0.82rem', marginBottom: 20 }}>
+                                    <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', marginBottom: 20 }}>
                                         Your account has been created. Your welcome bonus is ready to claim.
                                     </p>
 
                                     <div style={{
                                         background: 'rgba(0,0,0,0.4)',
-                                        border: '1px solid rgba(200,0,17,0.3)',
+                                        border: '1px solid rgba(255,255,255,0.3)',
                                         borderRadius: 14,
                                         padding: '18px',
                                         marginBottom: 20,
                                     }}>
-                                        <div style={{ fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(200,0,17,0.5)', marginBottom: 6 }}>
+                                        <div style={{ fontSize: '0.68rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', marginBottom: 6 }}>
                                             Your Bonus
                                         </div>
                                         <div style={{ fontFamily: 'Cinzel, serif', fontSize: '2.5rem', fontWeight: 900, background: 'linear-gradient(135deg, #FF3344, #CC0011)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                                             ${WELCOME_BONUS} USDT
                                         </div>
-                                        <div style={{ fontSize: '0.75rem', color: 'rgba(200,0,17,0.4)', marginTop: 4 }}>
+                                        <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', marginTop: 4 }}>
                                             Credited instantly to your casino balance
                                         </div>
                                     </div>
@@ -276,7 +276,7 @@ const Login = ({ onLogin }) => {
                                 </div>
 
                                 <div className="form-field">
-                                    <label className="form-label">Promo Code <span style={{ color: 'rgba(200,0,17,0.3)' }}>(optional)</span></label>
+                                    <label className="form-label">Promo Code <span style={{ color: 'rgba(255,255,255,0.3)' }}>(optional)</span></label>
                                     <div style={{ position: 'relative' }}>
                                         <input
                                             type="text"
@@ -290,7 +290,7 @@ const Login = ({ onLogin }) => {
                                             position: 'absolute', right: 14, top: '50%',
                                             transform: 'translateY(-50%)',
                                             fontSize: '0.68rem', fontWeight: 800,
-                                            color: 'rgba(200,0,17,0.35)',
+                                            color: 'rgba(255,255,255,0.35)',
                                             letterSpacing: '0.08em',
                                         }}>
                                             BONUS100
@@ -308,7 +308,7 @@ const Login = ({ onLogin }) => {
                                         onChange={e => setRegAge(e.target.checked)}
                                     />
                                     <label htmlFor="age-check">
-                                        I confirm I am <strong style={{ color: 'rgba(200,0,17,0.7)' }}>18 years of age or older</strong> and gambling is legal in my jurisdiction
+                                        I confirm I am <strong style={{ color: 'rgba(255,255,255,0.7)' }}>18 years of age or older</strong> and gambling is legal in my jurisdiction
                                     </label>
                                 </div>
 
@@ -374,7 +374,7 @@ const Login = ({ onLogin }) => {
                             </div>
 
                             <div style={{ textAlign: 'right', marginBottom: 20, marginTop: -8 }}>
-                                <a href="#reset" style={{ fontSize: '0.78rem', color: 'rgba(200,0,17,0.45)' }}>
+                                <a href="#reset" style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.45)' }}>
                                     Forgot password?
                                 </a>
                             </div>
@@ -397,7 +397,7 @@ const Login = ({ onLogin }) => {
                             </button>
 
                             <div style={{ textAlign: 'center', marginTop: 16 }}>
-                                <span style={{ fontSize: '0.78rem', color: 'rgba(200,0,17,0.35)' }}>
+                                <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)' }}>
                                     No account?{' '}
                                     <button
                                         type="button"

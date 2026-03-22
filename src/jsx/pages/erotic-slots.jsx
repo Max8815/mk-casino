@@ -90,9 +90,9 @@ const Reel = ({ strip, targetIndex, spinning, delay, onDone }) => {
             overflow: 'hidden',
             position: 'relative',
             borderRadius: 14,
-            background: 'linear-gradient(180deg, #1a0a14 0%, #0d0608 100%)',
-            border: '2px solid rgba(220,80,120,0.4)',
-            boxShadow: '0 0 20px rgba(220,80,120,0.1)',
+            background: 'linear-gradient(180deg, #0d0000 0%, #1a0000 100%)',
+            border: '2px solid rgba(200,15,35,0.6)',
+            boxShadow: '0 0 20px rgba(200,15,35,0.15)',
         }}>
             {/* Payline highlight */}
             <div style={{
@@ -100,9 +100,9 @@ const Reel = ({ strip, targetIndex, spinning, delay, onDone }) => {
                 top: SYMBOL_HEIGHT * PAYLINE_INDEX,
                 left: 0, right: 0,
                 height: SYMBOL_HEIGHT,
-                background: 'rgba(220,80,120,0.07)',
-                borderTop: '2px solid rgba(220,80,120,0.5)',
-                borderBottom: '2px solid rgba(220,80,120,0.5)',
+                background: 'rgba(200,15,35,0.08)',
+                borderTop: '2px solid rgba(200,15,35,0.6)',
+                borderBottom: '2px solid rgba(200,15,35,0.6)',
                 zIndex: 2,
                 pointerEvents: 'none',
             }} />
@@ -204,9 +204,9 @@ const EroticSlots = () => {
 
     const isJackpot = lastWin?.lines?.some(l => l.symbol.id === 'kiss' && l.type.includes('3'));
 
-    // Pink/rose accent colour used throughout
-    const pink = '#DC5078';
-    const pinkFaint = 'rgba(220,80,120,';
+    // Red accent colour used throughout
+    const pink = '#CC1122';
+    const pinkFaint = 'rgba(200,15,35,';
 
     return (
         <>
@@ -306,11 +306,11 @@ const EroticSlots = () => {
 
                                     {/* Machine frame */}
                                     <div style={{
-                                        background: 'linear-gradient(180deg, #120a10 0%, #1a0d16 100%)',
-                                        border: `2px solid ${pinkFaint}0.45)`,
+                                        background: 'linear-gradient(180deg, #0a0000 0%, #120000 100%)',
+                                        border: `2px solid ${pinkFaint}0.55)`,
                                         borderRadius: 20,
                                         padding: '28px 24px',
-                                        boxShadow: `0 0 40px ${pinkFaint}0.12), inset 0 0 40px rgba(0,0,0,0.6)`,
+                                        boxShadow: `0 0 40px ${pinkFaint}0.18), inset 0 0 40px rgba(0,0,0,0.7)`,
                                     }}>
                                         {/* Machine top */}
                                         <div style={{ textAlign: 'center', marginBottom: 20 }}>

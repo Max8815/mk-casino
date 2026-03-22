@@ -4,13 +4,14 @@ import Header from '../layout/header';
 import Sidebar from '../layout/sidebar';
 
 const GAMES = [
-    { id: 'roulette', icon: '🎡', title: 'Roulette',  sub: 'European · Single Zero',  badge: 'live', to: '/roulette' },
-    { id: 'slots',    icon: '🚗', title: 'Car Slots',     sub: '3-Reel · Up to 100x',   badge: 'live', to: '/slots'         },
-    { id: 'erotic',   icon: '💋', title: 'Erotic Slots', sub: '3-Reel · Up to 100x · 18+', badge: 'live', to: '/erotic-slots' },
-    { id: 'bj',       icon: '🃏', title: 'Blackjack',    sub: '21 · Beat the Dealer',  badge: 'soon', to: '#'              },
-    { id: 'crash',    icon: '📈', title: 'Crash',     sub: 'Multiplier Game',          badge: 'soon', to: '#'         },
-    { id: 'dice',     icon: '🎲', title: 'Dice',      sub: 'Roll to Win',             badge: 'soon', to: '#'         },
-    { id: 'baccarat', icon: '🏆', title: 'Baccarat',  sub: 'Punto Banco',             badge: 'soon', to: '#'         },
+    { id: 'roulette', icon: '🎡', title: 'Roulette',     sub: 'European · Single Zero',      badge: 'live', to: '/roulette',     desc: 'Bet on numbers, colours and dozens. House edge 2.7%.' },
+    { id: 'slots',    icon: '🚗', title: 'Car Slots',     sub: '3-Reel · Up to 100x',         badge: 'live', to: '/slots',         desc: 'High-speed 3-reel machine. Land Formula 1 for 100x jackpot.' },
+    { id: 'erotic',   icon: '💋', title: 'Erotic Slots',  sub: '3-Reel · Up to 100x · 18+',   badge: 'live', to: '/erotic-slots',  desc: '18+ themed 3-reel machine. Three kisses pays 100x!' },
+    { id: 'bj',       icon: '🃏', title: 'Blackjack',     sub: '21 · Beat the Dealer',        badge: 'soon', to: '#',              desc: 'Classic 21. Surrender, double-down and split available.' },
+    { id: 'crash',    icon: '📈', title: 'Crash',         sub: 'Multiplier · Cash Out Any Time', badge: 'soon', to: '#',           desc: 'Watch the multiplier climb. Cash out before it crashes.' },
+    { id: 'dice',     icon: '🎲', title: 'Dice',          sub: 'Roll to Win · Provably Fair',  badge: 'soon', to: '#',             desc: 'Choose your range, set your odds, roll the dice.' },
+    { id: 'baccarat', icon: '🏆', title: 'Baccarat',      sub: 'Punto Banco · Live Tables',    badge: 'soon', to: '#',             desc: 'The James Bond game. Bet Banker, Player or Tie.' },
+    { id: 'plinko',   icon: '🔴', title: 'Plinko',        sub: 'Drop · Bounce · Win',          badge: 'soon', to: '#',             desc: 'Drop the ball and watch it bounce to a multiplier slot.' },
 ];
 
 const Dashboard = ({ user, onLogout }) => {
@@ -106,6 +107,7 @@ const Dashboard = ({ user, onLogout }) => {
                         <span className="badge-live">3 Live</span>
                     </div>
 
+                    {/* Live games */}
                     <div className="games-grid mb-4">
                         {GAMES.map(g => (
                             <Link
@@ -113,20 +115,28 @@ const Dashboard = ({ user, onLogout }) => {
                                 to={g.to}
                                 className={`game-card ${g.badge === 'live' ? 'active' : 'coming-soon'}`}
                                 onClick={g.badge !== 'live' ? e => e.preventDefault() : undefined}
+                                style={{ position: 'relative' }}
                             >
                                 <div className="game-card-icon">{g.icon}</div>
                                 <div className="game-card-title">{g.title}</div>
                                 <div className="game-card-sub">{g.sub}</div>
-                                {g.badge === 'live'
-                                    ? <span className="badge-live">Live</span>
-                                    : <span className="badge-soon">Coming Soon</span>
-                                }
+                                {g.desc && (
+                                    <div style={{ fontSize: '0.7rem', color: 'rgba(212,175,55,0.35)', marginTop: 6, lineHeight: 1.4, textAlign: 'center' }}>
+                                        {g.desc}
+                                    </div>
+                                )}
+                                <div style={{ marginTop: 10 }}>
+                                    {g.badge === 'live'
+                                        ? <span className="badge-live">▶ Play Now</span>
+                                        : <span className="badge-soon">🔔 Coming Soon</span>
+                                    }
+                                </div>
                             </Link>
                         ))}
                     </div>
 
                     {/* Info strip */}
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14, marginBottom: 32 }}>
                         {[
                             { icon: '🔒', title: 'Provably Fair',   desc: 'Every round verifiable on-chain' },
                             { icon: '⚡', title: 'Instant Payouts', desc: 'USDT TRC-20 sent directly to you' },
@@ -147,6 +157,140 @@ const Dashboard = ({ user, onLogout }) => {
                                 </div>
                             </div>
                         ))}
+                    </div>
+
+                    {/* ── INVEST SECTION ─────────────────────────────────────── */}
+                    <div style={{ position: 'relative', overflow: 'hidden' }}>
+                        {/* Section heading */}
+                        <div className="d-flex align-items-center justify-content-between mb-3">
+                            <h3 style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.7)', margin: 0 }}>
+                                ✦ Invest in MK Casino
+                            </h3>
+                            <span style={{ padding: '3px 12px', borderRadius: 20, background: 'rgba(46,204,159,0.12)', border: '1px solid rgba(46,204,159,0.35)', color: '#2ECC9F', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.06em' }}>
+                                CNB APPROVED
+                            </span>
+                        </div>
+
+                        {/* Main invest banner */}
+                        <div style={{
+                            background: 'linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.02) 60%, rgba(46,204,159,0.05) 100%)',
+                            border: '1px solid rgba(212,175,55,0.3)',
+                            borderRadius: 22,
+                            padding: '32px 36px',
+                            marginBottom: 16,
+                            position: 'relative',
+                            overflow: 'hidden',
+                        }}>
+                            {/* Top accent line */}
+                            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, transparent, #D4AF37 30%, #2ECC9F 70%, transparent)' }} />
+
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32, alignItems: 'flex-start' }}>
+                                {/* Left: headline */}
+                                <div style={{ flex: '1 1 280px' }}>
+                                    <div style={{ fontSize: '0.68rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.45)', marginBottom: 8 }}>
+                                        Fixed-Income Investment · 5-Year Bonds
+                                    </div>
+                                    <h2 style={{ fontFamily: 'Cinzel, serif', fontSize: '2rem', fontWeight: 800, margin: '0 0 6px 0', color: '#fff', lineHeight: 1.2 }}>
+                                        Earn <span style={{ color: '#D4AF37' }}>10% p.a.</span>
+                                    </h2>
+                                    <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.9rem', marginBottom: 18, lineHeight: 1.6 }}>
+                                        Guaranteed annual yield on MK Casino corporate bonds — approved by the <strong style={{ color: 'rgba(212,175,55,0.8)' }}>Czech National Bank</strong>. Your investment is backed by a consortium of angel investors.
+                                    </p>
+
+                                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                                        <button style={{
+                                            padding: '12px 28px', borderRadius: 30,
+                                            background: 'linear-gradient(135deg, #D4AF37, #a8862b)',
+                                            border: 'none', color: '#000',
+                                            fontFamily: 'Poppins, sans-serif',
+                                            fontWeight: 800, fontSize: '0.88rem',
+                                            letterSpacing: '0.06em', cursor: 'pointer',
+                                            boxShadow: '0 4px 20px rgba(212,175,55,0.35)',
+                                        }}>
+                                            Invest Now →
+                                        </button>
+                                        <button style={{
+                                            padding: '12px 22px', borderRadius: 30,
+                                            background: 'none',
+                                            border: '1px solid rgba(212,175,55,0.35)',
+                                            color: 'rgba(212,175,55,0.7)',
+                                            fontFamily: 'Poppins, sans-serif',
+                                            fontWeight: 600, fontSize: '0.85rem',
+                                            cursor: 'pointer',
+                                        }}>
+                                            Download Prospectus
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Right: key facts */}
+                                <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', gap: 12, minWidth: 200 }}>
+                                    {[
+                                        { label: 'Annual Yield',       value: '10% p.a.',       color: '#D4AF37' },
+                                        { label: 'Bond Term',          value: '5 Years',         color: '#fff' },
+                                        { label: 'Min. Investment',    value: '€ 4,000',         color: '#2ECC9F' },
+                                        { label: 'Guarantee',          value: 'Angel Investors', color: '#fff' },
+                                        { label: 'Regulator Approval', value: 'Czech Nat. Bank', color: '#2ECC9F' },
+                                    ].map(f => (
+                                        <div key={f.label} style={{
+                                            background: 'rgba(0,0,0,0.3)',
+                                            border: '1px solid rgba(212,175,55,0.15)',
+                                            borderRadius: 12,
+                                            padding: '10px 16px',
+                                            display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16,
+                                        }}>
+                                            <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>{f.label}</span>
+                                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: f.color, whiteSpace: 'nowrap' }}>{f.value}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Three feature cards */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14 }}>
+                            {[
+                                {
+                                    icon: '🏦',
+                                    title: 'CNB Approved Prospectus',
+                                    desc: 'Bond emission fully approved by the Czech National Bank under EU prospectus regulation.',
+                                },
+                                {
+                                    icon: '🛡️',
+                                    title: 'Angel Investor Guarantee',
+                                    desc: 'Capital and yield payments are co-guaranteed by our consortium of angel investors.',
+                                },
+                                {
+                                    icon: '📈',
+                                    title: 'Fixed 10% Per Annum',
+                                    desc: 'Predictable, fixed returns paid annually. Min. €4,000 entry. 5-year maturity.',
+                                },
+                                {
+                                    icon: '🔐',
+                                    title: 'Secure & Transparent',
+                                    desc: 'Bond terms are publicly available. Full documentation provided upon request.',
+                                },
+                            ].map(item => (
+                                <div key={item.title} style={{
+                                    background: 'linear-gradient(145deg, rgba(212,175,55,0.06), rgba(212,175,55,0.02))',
+                                    border: '1px solid rgba(212,175,55,0.18)',
+                                    borderRadius: 16,
+                                    padding: '18px 18px',
+                                    display: 'flex', gap: 12, alignItems: 'flex-start',
+                                }}>
+                                    <span style={{ fontSize: '1.5rem', filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.3))', flexShrink: 0 }}>{item.icon}</span>
+                                    <div>
+                                        <div style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.04em', color: 'var(--gold-light)', marginBottom: 4 }}>{item.title}</div>
+                                        <div style={{ fontSize: '0.73rem', color: 'rgba(212,175,55,0.38)', lineHeight: 1.5 }}>{item.desc}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Disclaimer */}
+                        <p style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.2)', marginTop: 14, lineHeight: 1.6 }}>
+                            * Investment involves risk. Past performance is not a guarantee of future results. Bonds are subject to the approved prospectus filed with the Czech National Bank. Please read the full prospectus before investing.
+                        </p>
                     </div>
                 </div>
             </div>

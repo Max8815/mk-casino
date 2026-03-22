@@ -4,6 +4,7 @@ import Login from './pages/login';
 import Dashboard from './pages/dashboard';
 import Roulette from './pages/roulette';
 import Slots from './pages/slots';
+import EroticSlots from './pages/erotic-slots';
 import Wallet from './pages/wallet';
 import History from './pages/history';
 
@@ -25,8 +26,9 @@ const Router = () => {
                     <Route path="/login"    render={() => user ? <Redirect to="/" /> : <Login onLogin={handleLogin} />} />
                     <Route path="/"         exact render={() => guard(Dashboard)} />
                     <Route path="/roulette" render={() => guard(Roulette)} />
-                    <Route path="/slots"    render={() => guard(Slots)} />
-                    <Route path="/wallet"   render={() => guard(Wallet)} />
+                    <Route path="/slots"         render={() => guard(Slots)} />
+                    <Route path="/erotic-slots"  render={() => guard(EroticSlots)} />
+                    <Route path="/wallet"        render={() => guard(Wallet)} />
                     <Route path="/history"  render={() => guard(History)} />
                     <Redirect to="/login" />
                 </Switch>

@@ -5,8 +5,9 @@ import Sidebar from '../layout/sidebar';
 
 const GAMES = [
     { id: 'roulette', icon: '🎡', title: 'Roulette',  sub: 'European · Single Zero',  badge: 'live', to: '/roulette' },
-    { id: 'slots',    icon: '🚗', title: 'Car Slots', sub: '3-Reel · Up to 100x',     badge: 'live', to: '/slots'    },
-    { id: 'bj',       icon: '🃏', title: 'Blackjack', sub: '21 · Beat the Dealer',    badge: 'soon', to: '#'         },
+    { id: 'slots',    icon: '🚗', title: 'Car Slots',     sub: '3-Reel · Up to 100x',   badge: 'live', to: '/slots'         },
+    { id: 'erotic',   icon: '💋', title: 'Erotic Slots', sub: '3-Reel · Up to 100x · 18+', badge: 'live', to: '/erotic-slots' },
+    { id: 'bj',       icon: '🃏', title: 'Blackjack',    sub: '21 · Beat the Dealer',  badge: 'soon', to: '#'              },
     { id: 'crash',    icon: '📈', title: 'Crash',     sub: 'Multiplier Game',          badge: 'soon', to: '#'         },
     { id: 'dice',     icon: '🎲', title: 'Dice',      sub: 'Roll to Win',             badge: 'soon', to: '#'         },
     { id: 'baccarat', icon: '🏆', title: 'Baccarat',  sub: 'Punto Banco',             badge: 'soon', to: '#'         },
@@ -102,7 +103,7 @@ const Dashboard = ({ user, onLogout }) => {
                         <h3 style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.7)', margin: 0 }}>
                             ✦ Games
                         </h3>
-                        <span className="badge-live">2 Live</span>
+                        <span className="badge-live">3 Live</span>
                     </div>
 
                     <div className="games-grid mb-4">

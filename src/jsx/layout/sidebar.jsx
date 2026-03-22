@@ -4,7 +4,8 @@ import { Link, useLocation } from 'react-router-dom';
 const NAV = [
     { to: '/', icon: '🏠', label: 'Home' },
     { to: '/roulette', icon: '🎡', label: 'Roulette' },
-    { to: '/slots', icon: '🚗', label: 'Slots' },
+    { to: '/slots',        icon: '🚗', label: 'Slots' },
+    { to: '/erotic-slots', icon: '💋', label: 'Erotic' },
     { to: '/wallet', icon: '💰', label: 'Wallet' },
     { to: '/history', icon: '📜', label: 'History' },
 ];

@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Header from '../layout/header';
 import Sidebar from '../layout/sidebar';
+import ProvablyFairPanel from '../components/ProvablyFairPanel';
+import { newServerSeed, deriveHash, deriveRoulette, generateRandomHex } from '../../utils/provablyFair';
 
 const WHEEL_ORDER = [
     0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10,
@@ -142,6 +144,21 @@ const Roulette = () => {
     const [showDeposit, setShowDeposit] = useState(false);
     const [copied, setCopied] = useState(false);
 
+    // Provably fair state
+    const [serverSeed, setServerSeed] = useState('');
+    const [serverSeedHash, setServerSeedHash] = useState('');
+    const [clientSeed, setClientSeed] = useState(() => generateRandomHex(8));
+    const [nonce, setNonce] = useState(0);
+    const [lastGame, setLastGame] = useState(null);
+
+    // Generate initial server seed on mount
+    useEffect(() => {
+        newServerSeed().then(({ serverSeed: s, serverSeedHash: h }) => {
+            setServerSeed(s);
+            setServerSeedHash(h);
+        });
+    }, []);
+
     const totalBet = selectedBets.reduce((s, b) => s + b.amount, 0);
 
     useEffect(() => { drawWheel(canvasRef.current, 0); }, []);
@@ -169,14 +186,16 @@ const Roulette = () => {
         rafRef.current = requestAnimationFrame(frame);
     }, []);
 
-    const handleSpin = () => {
+    const handleSpin = async () => {
         if (spinning || selectedBets.length === 0 || totalBet > balance) return;
         setSpinning(true);
         setResult(null);
         setBalance(prev => +(prev - totalBet).toFixed(2));
 
-        const resultIndex = Math.floor(Math.random() * WHEEL_ORDER.length);
-        const resultNumber = WHEEL_ORDER[resultIndex];
+        // Derive outcome from hash (provably fair)
+        const hash = await deriveHash(serverSeed, clientSeed, nonce);
+        const resultNumber = deriveRoulette(hash);   // 0–36
+        const resultIndex = WHEEL_ORDER.indexOf(resultNumber);
         const resultColor = getColor(resultNumber);
 
         const segAngle = (2 * Math.PI) / WHEEL_ORDER.length;
@@ -184,7 +203,12 @@ const Roulette = () => {
         const fullSpins = (5 + Math.floor(Math.random() * 4)) * 2 * Math.PI;
         const targetRotation = targetBaseRot + fullSpins;
 
-        animateSpin(targetRotation, () => {
+        // Capture provably fair values for this round before async state changes
+        const roundServerSeed = serverSeed;
+        const roundClientSeed = clientSeed;
+        const roundNonce = nonce;
+
+        animateSpin(targetRotation, async () => {
             rotationRef.current = targetBaseRot;
             drawWheel(canvasRef.current, targetBaseRot);
             setSpinning(false);
@@ -214,6 +238,18 @@ const Roulette = () => {
             setResult({ number: resultNumber, color: resultColor, totalWin, net: netResult });
             setLastResult({ number: resultNumber, color: resultColor });
             setHistory(prev => [historyEntry, ...prev].slice(0, 20));
+
+            // Reveal server seed for this round, generate fresh one for next round
+            setLastGame({
+                serverSeed: roundServerSeed,
+                clientSeed: roundClientSeed,
+                nonce: roundNonce,
+                outcome: resultNumber,
+            });
+            setNonce(n => n + 1);
+            const { serverSeed: nextSeed, serverSeedHash: nextHash } = await newServerSeed();
+            setServerSeed(nextSeed);
+            setServerSeedHash(nextHash);
         });
     };
 
@@ -409,6 +445,15 @@ const Roulette = () => {
                             </div>
                         </div>
                     )}
+
+                    <ProvablyFairPanel
+                        game="roulette"
+                        serverSeedHash={serverSeedHash}
+                        clientSeed={clientSeed}
+                        onClientSeedChange={setClientSeed}
+                        nonce={nonce}
+                        lastGame={lastGame}
+                    />
                 </div>
             </div>
 

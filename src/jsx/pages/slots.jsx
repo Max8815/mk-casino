@@ -1,6 +1,8 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Header from '../layout/header';
 import Sidebar from '../layout/sidebar';
+import ProvablyFairPanel from '../components/ProvablyFairPanel';
+import { newServerSeed, deriveHash, deriveSlots, generateRandomHex } from '../../utils/provablyFair';
 
 const SYMBOLS = [
     { id: 'f1',    emoji: '🏎', label: 'F1',       payout3: 100, payout2: 5, weight: 2 },
@@ -116,19 +118,42 @@ const Slots = () => {
     const [showDeposit, setShowDeposit] = useState(false);
     const [copied, setCopied] = useState(false);
 
+    // Provably fair state
+    const [serverSeed, setServerSeed] = useState('');
+    const [serverSeedHash, setServerSeedHash] = useState('');
+    const [clientSeed, setClientSeed] = useState(() => generateRandomHex(8));
+    const [nonce, setNonce] = useState(0);
+    const [lastGame, setLastGame] = useState(null);
+
+    useEffect(() => {
+        newServerSeed().then(({ serverSeed: s, serverSeedHash: h }) => {
+            setServerSeed(s);
+            setServerSeedHash(h);
+        });
+    }, []);
+
     const bet = parseFloat(betAmount) || 0;
 
-    const handleSpin = useCallback(() => {
+    const handleSpin = useCallback(async () => {
         if (spinning || bet <= 0 || bet > balance) return;
         setSpinning(true);
         setLastWin(null);
         setBalance(prev => +(prev - bet).toFixed(2));
 
-        const newTargets = strips.map(strip => Math.floor(Math.random() * strip.length));
-        setTargets(newTargets);
-        const paylineSymbols = newTargets.map((idx, r) => strips[r][idx]);
+        // Derive reel target indices from hash (provably fair)
+        const hash = await deriveHash(serverSeed, clientSeed, nonce);
+        const poolSize = strips[0].length; // all strips same length
+        const hashTargets = deriveSlots(hash, REEL_COUNT, poolSize);
 
-        const onAllDone = () => {
+        // Capture for verification record before state changes
+        const roundServerSeed = serverSeed;
+        const roundClientSeed = clientSeed;
+        const roundNonce = nonce;
+
+        setTargets(hashTargets);
+        const paylineSymbols = hashTargets.map((idx, r) => strips[r][idx]);
+
+        const onAllDone = async () => {
             const { winnings, lines } = evaluate(paylineSymbols, bet);
             setBalance(prev => +(prev + winnings).toFixed(2));
             setLastWin({ winnings, lines, bet });
@@ -138,10 +163,23 @@ const Slots = () => {
                 time: new Date().toLocaleTimeString(),
             }, ...prev].slice(0, 20));
             setSpinning(false);
+
+            // Reveal server seed, prepare next round
+            setLastGame({
+                serverSeed: roundServerSeed,
+                clientSeed: roundClientSeed,
+                nonce: roundNonce,
+                outcome: hashTargets,
+                poolSize,
+            });
+            setNonce(n => n + 1);
+            const { serverSeed: nextSeed, serverSeedHash: nextHash } = await newServerSeed();
+            setServerSeed(nextSeed);
+            setServerSeedHash(nextHash);
         };
 
         setTimeout(onAllDone, 2000 + (REEL_COUNT - 1) * 400 + 300);
-    }, [spinning, bet, balance, strips]);
+    }, [spinning, bet, balance, strips, serverSeed, clientSeed, nonce]);
 
     const copyAddress = () => {
         navigator.clipboard.writeText('YOUR_USDT_WALLET_ADDRESS');
@@ -304,6 +342,15 @@ const Slots = () => {
                             </div>
                         </div>
                     )}
+
+                    <ProvablyFairPanel
+                        game="slots"
+                        serverSeedHash={serverSeedHash}
+                        clientSeed={clientSeed}
+                        onClientSeedChange={setClientSeed}
+                        nonce={nonce}
+                        lastGame={lastGame}
+                    />
                 </div>
             </div>
 

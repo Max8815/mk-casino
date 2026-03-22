@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper: wallet-based auth ──────────────────────────────────────────
+    // Since we use wallet-signed sessions (not Firebase Auth), we rely on
+    // the client SDK only writing to their own address-keyed documents.
+    // For production, use Firebase Auth + Custom Tokens issued after wallet
+    // signature verification on a backend.
+
+    // Users: keyed by wallet address (lowercase) or Firebase UID
+    match /users/{userId} {
+      allow read, update: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false;
+    }
+
+    // Transactions: readable/writable only by owner
+    match /transactions/{txId} {
+      allow read:   if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if false;
+    }
+
+    // Game history: readable/writable only by owner
+    match /game_history/{gameId} {
+      allow read:   if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if false;
+    }
+
+    // Bets: readable/writable only by owner
+    match /bets/{betId} {
+      allow read:   if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if false;
+    }
+
+    // AI interactions: keyed by walletAddress
+    match /ai_interactions/{docId} {
+      allow read:   if request.auth != null && request.auth.uid == resource.data.walletAddress;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.walletAddress;
+      allow update, delete: if false;
+    }
+
+    // Bonds
+    match /bonds/{bondId} {
+      allow read:   if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow delete: if false;
+    }
+
+    // Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

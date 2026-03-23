@@ -7,6 +7,7 @@ const GAMES = [
     { id: 'roulette', icon: '◉', title: 'Roulette',  sub: 'European · Single Zero', badge: 'live', to: '/roulette',    desc: 'Single zero. Multiple bet types.' },
     { id: 'slots',    icon: '◆', title: 'Car Slots', sub: '3-Reel · Up to 100x',   badge: 'live', to: '/slots',        desc: 'High-speed 3-reel machine.' },
     { id: 'erotic',   icon: '♥', title: 'Erotic',     sub: '3-Reel · Up to 100x',   badge: 'live', to: '/erotic-slots', desc: 'Themed 3-reel machine.' },
+    { id: 'minesweeper', icon: '💣', title: 'Minesweeper', sub: '5x5 · Up to 10x',     badge: 'new',  to: '/minesweeper',   desc: 'Pick cells, dodge mines.' },
     { id: 'bj',       icon: '♠', title: 'Blackjack',  sub: '21 · Beat the Dealer',  badge: 'soon', to: '#',             desc: 'Classic 21.' },
     { id: 'crash',    icon: '▲', title: 'Crash',      sub: 'Multiplier · Cash Out',  badge: 'soon', to: '#',             desc: 'Watch the multiplier climb.' },
     { id: 'dice',     icon: '■', title: 'Dice',       sub: 'Provably Fair',          badge: 'soon', to: '#',             desc: 'Choose your range.' },

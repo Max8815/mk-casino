@@ -7,6 +7,7 @@ import Slots from './pages/slots';
 import EroticSlots from './pages/erotic-slots';
 import Wallet from './pages/wallet';
 import History from './pages/history';
+import Minesweeper from './pages/minesweeper';
 import { getOrCreateWalletUser } from '../firebase/db';
 import { useWallet } from '../wallet/useWallet';
 
@@ -69,6 +70,7 @@ const Router = () => {
                     <Route path="/erotic-slots"  render={() => guard(EroticSlots)} />
                     <Route path="/wallet"        render={() => guard(Wallet)} />
                     <Route path="/history"       render={() => guard(History)} />
+                    <Route path="/minesweeper" render={() => guard(Minesweeper)} />
                     <Redirect to="/login" />
                 </Switch>
             </div>

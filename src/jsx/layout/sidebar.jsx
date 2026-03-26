@@ -6,7 +6,13 @@ const NAV = [
     { to: '/roulette', icon: '◉', label: 'Roulette' },
     { to: '/slots', icon: '◆', label: 'Slots' },
     { to: '/erotic-slots', icon: '♥', label: 'Erotic' },
-    { to: '/wallet', icon: '▲', label: 'Wallet' },
+    { to: '/minesweeper', icon: '◇', label: 'Minesweeper' },
+    { to: '/crash', icon: '▲', label: 'Crash' },
+    { to: '/hilo', icon: '↕', label: 'Hi-Lo' },
+    { to: '/tapfrenzy', icon: '◆', label: 'Tap' },
+    { to: '/dice', icon: '●', label: 'Dice' },
+    { to: '/racing', icon: '🏎️', label: 'Racing' },
+    { to: '/wallet', icon: '◀', label: 'Wallet' },
     { to: '/history', icon: '■', label: 'History' },
 ];
 

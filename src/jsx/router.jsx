@@ -8,6 +8,11 @@ import EroticSlots from './pages/erotic-slots';
 import Wallet from './pages/wallet';
 import History from './pages/history';
 import Minesweeper from './pages/minesweeper';
+import Crash from './pages/crash';
+import HiLo from './pages/hilo';
+import TapFrenzy from './pages/tapfrenzy';
+import Dice from './pages/dice';
+import Racing from './pages/racing';
 import { getOrCreateWalletUser } from '../firebase/db';
 import { useWallet } from '../wallet/useWallet';
 
@@ -29,17 +34,19 @@ const Router = () => {
     // If wallet auto-reconnected (MetaMask), sync user from Firestore
     useEffect(() => {
         if (walletAddress && !user) {
-            getOrCreateWalletUser(walletAddress).then(userData => {
-                const u = {
-                    uid: walletAddress.toLowerCase(),
-                    walletAddress,
-                    username: userData.username,
-                    balance: userData.balance ?? 100,
-                    authType: 'wallet',
-                };
-                setUser(u);
-                localStorage.setItem(SESSION_KEY, JSON.stringify(u));
-            }).catch(() => {});
+            // Mock user for testing (Firebase disabled)
+            const u = {
+                uid: walletAddress.toLowerCase(),
+                walletAddress,
+                username: 'TestUser',
+                balance: 10000,
+                authType: 'wallet',
+            };
+            setUser(u);
+            localStorage.setItem(SESSION_KEY, JSON.stringify(u));
+            
+            // Optional: Call Firebase when configured
+            // getOrCreateWalletUser(walletAddress).then(userData => { ... }).catch(() => {});
         }
     }, [walletAddress]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -71,6 +78,11 @@ const Router = () => {
                     <Route path="/wallet"        render={() => guard(Wallet)} />
                     <Route path="/history"       render={() => guard(History)} />
                     <Route path="/minesweeper" render={() => guard(Minesweeper)} />
+                    <Route path="/crash" render={() => guard(Crash)} />
+                    <Route path="/hilo" render={() => guard(HiLo)} />
+                    <Route path="/tapfrenzy" render={() => guard(TapFrenzy)} />
+                    <Route path="/dice" render={() => guard(Dice)} />
+                    <Route path="/racing" render={() => guard(Racing)} />
                     <Redirect to="/login" />
                 </Switch>
             </div>

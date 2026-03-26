@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useWallet } from '../../wallet/useWallet';
-import { getOrCreateWalletUser } from '../../firebase/db';
+// import { getOrCreateWalletUser } from '../../firebase/db';
 
 const CASINO_WALLET = 'TGBtzWDkAAfWKqmH9YJEomtHtFZNgXAb7K';
 
@@ -24,13 +24,12 @@ const Login = ({ onLogin }) => {
         setStep('connecting');
         try {
             const address = await connectFn();
-            // Provision / fetch user in Firestore
-            const userData = await getOrCreateWalletUser(address);
+            // Mock user (Firebase disabled for testing)
             onLogin({
                 uid: address.toLowerCase(),
                 walletAddress: address,
-                username: userData.username,
-                balance: userData.balance ?? 100,
+                username: 'CasinoPlayer',
+                balance: 10000,
                 authType: 'wallet',
             });
             history.push('/');

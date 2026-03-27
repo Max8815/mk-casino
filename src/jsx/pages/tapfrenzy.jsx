@@ -13,6 +13,7 @@ const TapFrenzy = ({ user, onLogout }) => {
     const [streak, setStreak] = useState(0);
     const [speed, setSpeed] = useState(800); // interval in ms
     const [tapCount, setTapCount] = useState(0);
+    const [timeLeft, setTimeLeft] = useState(0);
     const [history, setHistory] = useState([]);
     const [serverSeed, setServerSeed] = useState(null);
     const [clientSeed, setClientSeed] = useState(generateRandomHex());
@@ -20,12 +21,15 @@ const TapFrenzy = ({ user, onLogout }) => {
     const [winMultiplier, setWinMultiplier] = useState(1);
 
     const gameLoopRef = useRef(null);
+    const timerRef = useRef(null);
     const colorSequenceRef = useRef([]);
     const sequenceIndexRef = useRef(0);
+    const currentSpeedRef = useRef(800);
 
     const COLORS = ['RED', 'GREEN', 'BLUE'];
     const CORRECT_COLOR = 'GREEN';
     const TARGET_TAPS = 10;
+    const GAME_DURATION = 30000; // 30 seconds
 
     const generateColorSequence = useCallback((seed1, seed2, count) => {
         const colors = [];
@@ -45,6 +49,83 @@ const TapFrenzy = ({ user, onLogout }) => {
         return colors;
     }, [nonce]);
 
+    // Handle game loop - changes colors at intervals
+    useEffect(() => {
+        if (gameState !== 'playing') {
+            if (gameLoopRef.current) {
+                clearInterval(gameLoopRef.current);
+                gameLoopRef.current = null;
+            }
+            return;
+        }
+
+        const sequence = colorSequenceRef.current;
+        
+        // Clear existing interval
+        if (gameLoopRef.current) {
+            clearInterval(gameLoopRef.current);
+        }
+
+        // Create new interval with current speed
+        gameLoopRef.current = setInterval(() => {
+            setCurrentColor(prevColor => {
+                const nextIndex = sequenceIndexRef.current;
+                if (nextIndex < sequence.length) {
+                    const color = sequence[nextIndex];
+                    sequenceIndexRef.current++;
+                    return color;
+                }
+                // If sequence runs out, regenerate more colors
+                return prevColor;
+            });
+        }, currentSpeedRef.current);
+
+        return () => {
+            if (gameLoopRef.current) {
+                clearInterval(gameLoopRef.current);
+                gameLoopRef.current = null;
+            }
+        };
+    }, [gameState]);
+
+    // Handle timer countdown
+    useEffect(() => {
+        if (gameState !== 'playing') {
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+                timerRef.current = null;
+            }
+            return;
+        }
+
+        const startTime = Date.now();
+        
+        timerRef.current = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.max(0, GAME_DURATION - elapsed);
+            
+            setTimeLeft(remaining);
+
+            if (remaining === 0) {
+                // Time's up - end game
+                clearInterval(timerRef.current);
+                timerRef.current = null;
+                if (score >= TARGET_TAPS) {
+                    endGameWon(score);
+                } else {
+                    endGameLose();
+                }
+            }
+        }, 100);
+
+        return () => {
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+                timerRef.current = null;
+            }
+        };
+    }, [gameState, score]);
+
     const startGame = useCallback(() => {
         const amount = parseFloat(betAmount) || 0;
         if (amount <= 0 || amount > balance) {
@@ -59,23 +140,18 @@ const TapFrenzy = ({ user, onLogout }) => {
         setSpeed(800);
         setTapCount(0);
         setWinMultiplier(1);
+        setTimeLeft(GAME_DURATION);
+        currentSpeedRef.current = 800;
 
         const newSeed = newServerSeed();
         setServerSeed(newSeed);
 
-        // Generate color sequence
-        const sequence = generateColorSequence(newSeed, clientSeed, 50);
+        // Generate larger color sequence (200 colors for 30s game)
+        const sequence = generateColorSequence(newSeed, clientSeed, 200);
         colorSequenceRef.current = sequence;
         sequenceIndexRef.current = 0;
-
-        // Start game loop
-        gameLoopRef.current = setInterval(() => {
-            if (sequenceIndexRef.current < sequence.length) {
-                setCurrentColor(sequence[sequenceIndexRef.current]);
-                sequenceIndexRef.current++;
-            }
-        }, speed);
-    }, [betAmount, balance, clientSeed, nonce, generateColorSequence, speed]);
+        setCurrentColor(null);
+    }, [betAmount, balance, clientSeed, generateColorSequence]);
 
     const handleTap = useCallback(() => {
         if (gameState !== 'playing') return;
@@ -83,29 +159,40 @@ const TapFrenzy = ({ user, onLogout }) => {
         const isCorrect = currentColor === CORRECT_COLOR;
 
         if (isCorrect) {
-            const newScore = score + 1;
-            const newStreak = streak + 1;
-            setScore(newScore);
-            setStreak(newStreak);
+            setScore(prevScore => {
+                const newScore = prevScore + 1;
+                
+                // Increase speed every 3 correct taps
+                if (newScore % 3 === 0) {
+                    setSpeed(prevSpeed => {
+                        const newSpeed = Math.max(300, prevSpeed - 50);
+                        currentSpeedRef.current = newSpeed;
+                        return newSpeed;
+                    });
+                }
+
+                // Check if won
+                if (newScore >= TARGET_TAPS) {
+                    endGameWon(newScore);
+                }
+
+                return newScore;
+            });
+            
+            setStreak(prev => prev + 1);
             setTapCount(prev => prev + 1);
-
-            // Increase speed every 3 correct taps
-            if (newScore % 3 === 0 && speed > 300) {
-                setSpeed(prev => prev - 50);
-            }
-
-            // Check if won
-            if (newScore >= TARGET_TAPS) {
-                endGameWon(newScore);
-            }
         } else {
             // Wrong tap = game over
             endGameLose();
         }
-    }, [gameState, currentColor, score, streak, speed]);
+    }, [gameState, currentColor]);
 
     const endGameWon = useCallback((finalScore) => {
         clearInterval(gameLoopRef.current);
+        clearInterval(timerRef.current);
+        gameLoopRef.current = null;
+        timerRef.current = null;
+        
         setGameState('won');
 
         const amount = parseFloat(betAmount) || 0;
@@ -129,6 +216,10 @@ const TapFrenzy = ({ user, onLogout }) => {
 
     const endGameLose = useCallback(() => {
         clearInterval(gameLoopRef.current);
+        clearInterval(timerRef.current);
+        gameLoopRef.current = null;
+        timerRef.current = null;
+        
         setGameState('gameover');
 
         const amount = parseFloat(betAmount) || 0;
@@ -145,11 +236,17 @@ const TapFrenzy = ({ user, onLogout }) => {
     }, [score, betAmount]);
 
     const resetGame = useCallback(() => {
+        clearInterval(gameLoopRef.current);
+        clearInterval(timerRef.current);
+        gameLoopRef.current = null;
+        timerRef.current = null;
+        
         setGameState('idle');
         setCurrentColor(null);
         setScore(0);
         setStreak(0);
         setSpeed(800);
+        setTimeLeft(0);
         setBetAmount('');
     }, []);
 
@@ -157,6 +254,7 @@ const TapFrenzy = ({ user, onLogout }) => {
     useEffect(() => {
         return () => {
             if (gameLoopRef.current) clearInterval(gameLoopRef.current);
+            if (timerRef.current) clearInterval(timerRef.current);
         };
     }, []);
 
@@ -166,6 +264,8 @@ const TapFrenzy = ({ user, onLogout }) => {
         'green': 'rgba(0, 255, 0, 0.8)',
         'blue': 'rgba(0, 0, 255, 0.8)'
     };
+
+    const timeLeftSeconds = Math.ceil(timeLeft / 1000);
 
     return (
         <div className="app-layout">
@@ -209,7 +309,9 @@ const TapFrenzy = ({ user, onLogout }) => {
                                     <div className="gameover-message">
                                         <div className="title">GAME OVER!</div>
                                         <div className="score">Score: {score}/{TARGET_TAPS}</div>
-                                        <div style={{ fontSize: '0.9rem', marginTop: '0.5rem', color: '#ff6b6b' }}>Wrong color tapped!</div>
+                                        <div style={{ fontSize: '0.9rem', marginTop: '0.5rem', color: '#ff6b6b' }}>
+                                            {score >= TARGET_TAPS ? 'Time\'s up!' : 'Wrong color tapped!'}
+                                        </div>
                                     </div>
                                 )}
 
@@ -237,6 +339,14 @@ const TapFrenzy = ({ user, onLogout }) => {
                                 <span className="label">Speed:</span>
                                 <span className="value">{speed}ms</span>
                             </div>
+                            {gameState === 'playing' && (
+                                <div className="score-box">
+                                    <span className="label">Time:</span>
+                                    <span className="value" style={{ color: timeLeftSeconds < 5 ? '#ff6b6b' : '#aaa' }}>
+                                        {timeLeftSeconds}s
+                                    </span>
+                                </div>
+                            )}
                         </div>
 
                         {/* Controls */}
@@ -398,6 +508,7 @@ const TapFrenzy = ({ user, onLogout }) => {
                     gap: 1.5rem;
                     margin-bottom: 1.5rem;
                     justify-content: center;
+                    flex-wrap: wrap;
                 }
 
                 .score-box {

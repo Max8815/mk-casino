@@ -61,6 +61,7 @@ export default function Minesweeper({ user = {}, onLogout } = {}) {
   const [cashOut, setCashOut] = useState(null);
   const [history, setHistory] = useState([]);
   const [balance, setBalance] = useState(user?.balance || 1000);
+  const [isInitializing, setIsInitializing] = useState(false); // FIX: Prevent race conditions
 
   // Provably fair state
   const [serverSeed, setServerSeed] = useState('');
@@ -104,29 +105,53 @@ export default function Minesweeper({ user = {}, onLogout } = {}) {
     },
   }), []);
 
+  // FIX: Proper async game initialization with race condition prevention
   const startGame = useCallback(async (row, col) => {
-    // Use provably fair to create the board
-    const hash = await deriveHash(serverSeed, clientSeed, nonce);
-    const newBoard = createBoard(serverSeed, hash, 0);
-    newBoard[row][col].revealed = true;
+    if (isInitializing) return; // Prevent double-click races
     
-    setBoard(newBoard);
-    setGameOver(false);
-    setWon(false);
-    setRevealedCount(1);
-    setCurrentMultiplier(1);
-    setCashOut(null);
-  }, [serverSeed, clientSeed, nonce]);
+    setIsInitializing(true);
+    
+    try {
+      // Use provably fair to create the board
+      const hash = await deriveHash(serverSeed, clientSeed, nonce);
+      const newBoard = createBoard(serverSeed, hash, 0);
+      
+      // Verify first click is safe
+      if (newBoard[row][col].isMine) {
+        // Regenerate board until first click is safe
+        let attempts = 0;
+        while (newBoard[row][col].isMine && attempts < 10) {
+          const retryHash = await deriveHash(serverSeed, clientSeed, nonce + attempts + 1);
+          newBoard = createBoard(serverSeed, retryHash, 0);
+          attempts++;
+        }
+      }
+      
+      newBoard[row][col].revealed = true;
+      
+      // FIX: Set all state synchronously after async operation completes
+      setBoard(newBoard);
+      setGameOver(false);
+      setWon(false);
+      setRevealedCount(1);
+      setCurrentMultiplier(1);
+      setCashOut(null);
+    } finally {
+      setIsInitializing(false);
+    }
+  }, [serverSeed, clientSeed, nonce, isInitializing]);
 
   const handleCellClick = useCallback((row, col) => {
-    if (!board || gameOver || board[row][col].revealed) return;
-    if (cashOut !== null) return; // Can't click during cash-out state
+    // FIX: Better validation - check board exists and cell is not revealed
+    if (!board || gameOver || board[row][col].revealed || cashOut !== null || isInitializing) {
+      return;
+    }
 
     const newBoard = deepCloneBoard(board);
     newBoard[row][col].revealed = true;
 
     if (newBoard[row][col].isMine) {
-      // Reveal all mines
+      // Reveal all mines on hit
       newBoard.forEach((r, ri) => r.forEach((c, ci) => {
         if (c.isMine) newBoard[ri][ci].revealed = true;
       }));
@@ -134,21 +159,56 @@ export default function Minesweeper({ user = {}, onLogout } = {}) {
       setGameOver(true);
       setCashOut(0);
       setBalance(prev => +(prev - betAmount).toFixed(2));
+      
+      // FIX: Add loss to history
+      setHistory(prev => [{
+        id: Date.now(),
+        revealed: revealedCount,
+        bet: betAmount,
+        multiplier: currentMultiplier,
+        payout: 0,
+        profit: -betAmount,
+        result: 'lost',
+        time: new Date().toLocaleTimeString(),
+      }, ...prev].slice(0, 20));
       return;
     }
 
     const newRevealed = revealedCount + 1;
+    const totalSafeCells = GRID_SIZE * GRID_SIZE - MINE_COUNT;
+    
+    // FIX: Correct multiplier calculation based on revealed safe cells
     const multiplierIndex = Math.min(Math.floor((newRevealed - 1) / MULTIPLIER_THRESHOLD), MULTIPLIERS.length - 1);
     const newMultiplier = MULTIPLIERS[multiplierIndex];
-    const newCashOut = betAmount * newMultiplier;
+    const newCashOut = +(betAmount * newMultiplier).toFixed(2);
 
     setBoard(newBoard);
     setRevealedCount(newRevealed);
     setCurrentMultiplier(newMultiplier);
     setCashOut(newCashOut);
-  }, [board, gameOver, cashOut, revealedCount, betAmount]);
+
+    // FIX: Auto-win if all safe cells revealed
+    if (newRevealed === totalSafeCells) {
+      setGameOver(true);
+      setWon(true);
+      setBalance(prev => +(prev + newCashOut).toFixed(2));
+      
+      setHistory(prev => [{
+        id: Date.now(),
+        revealed: newRevealed,
+        bet: betAmount,
+        multiplier: newMultiplier,
+        payout: newCashOut,
+        profit: +(newCashOut - betAmount).toFixed(2),
+        result: 'won',
+        time: new Date().toLocaleTimeString(),
+      }, ...prev].slice(0, 20));
+    }
+  }, [board, gameOver, cashOut, revealedCount, betAmount, currentMultiplier, isInitializing]);
 
   const handleCashOut = useCallback(() => {
+    if (!cashOut || cashOut === null) return;
+    
     setGameOver(true);
     setWon(true);
     setBalance(prev => +(prev + cashOut).toFixed(2));
@@ -173,6 +233,7 @@ export default function Minesweeper({ user = {}, onLogout } = {}) {
     setCurrentMultiplier(1);
     setCashOut(null);
     setNonce(n => n + 1);
+    setIsInitializing(false);
   }, []);
 
   const totalRevealed = GRID_SIZE * GRID_SIZE - MINE_COUNT;
@@ -222,7 +283,7 @@ export default function Minesweeper({ user = {}, onLogout } = {}) {
               animation: 'pulse 0.5s ease'
             }}>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#000' }}>
-                {won ? `🎉 YOU WON ${cashOut.toFixed(2)} USDT!` : '💥 GAME OVER'}
+                {won ? `🎉 YOU WON ${cashOut.toFixed(2)} USDT!` : '💥 GAME OVER - MINE HIT'}
               </div>
             </div>
           )}
@@ -248,14 +309,14 @@ export default function Minesweeper({ user = {}, onLogout } = {}) {
                   <button
                     key={`${ri}-${ci}`}
                     onClick={() => handleCellClick(ri, ci)}
-                    disabled={gameOver || cell.revealed}
+                    disabled={gameOver || cell.revealed || isInitializing}
                     style={{
                       width: '100%',
                       aspectRatio: '1',
                       background: bgColor,
                       border: `2px solid ${borderColor}`,
                       borderRadius: 6,
-                      cursor: (gameOver || cell.revealed) ? 'default' : 'pointer',
+                      cursor: (gameOver || cell.revealed || isInitializing) ? 'default' : 'pointer',
                       fontSize: '1.2rem',
                       fontFamily: 'monospace',
                       transition: 'all 0.15s ease',
@@ -276,20 +337,22 @@ export default function Minesweeper({ user = {}, onLogout } = {}) {
                 <button
                   key={i}
                   onClick={() => startGame(Math.floor(i / GRID_SIZE), i % GRID_SIZE)}
+                  disabled={isInitializing}
                   style={{
                     width: '100%',
                     aspectRatio: '1',
                     background: '#222',
                     border: '2px solid #444',
                     borderRadius: 6,
-                    cursor: 'pointer',
+                    cursor: isInitializing ? 'not-allowed' : 'pointer',
                     fontSize: '0.8rem',
                     color: '#666',
                     fontFamily: 'monospace',
                     transition: 'all 0.15s ease',
+                    opacity: isInitializing ? 0.5 : 1,
                   }}
                 >
-                  TAP
+                  {isInitializing ? '...' : 'TAP'}
                 </button>
               ))
             )}
@@ -299,6 +362,7 @@ export default function Minesweeper({ user = {}, onLogout } = {}) {
           {board && !gameOver && cashOut !== null && (
             <button
               onClick={handleCashOut}
+              disabled={isInitializing}
               style={{
                 display: 'block',
                 width: '100%',
@@ -311,10 +375,11 @@ export default function Minesweeper({ user = {}, onLogout } = {}) {
                 fontSize: '1.2rem',
                 fontWeight: 'bold',
                 color: '#000',
-                cursor: 'pointer',
+                cursor: isInitializing ? 'not-allowed' : 'pointer',
                 fontFamily: 'monospace',
                 transition: 'transform 0.15s ease',
-                boxShadow: '0 4px 20px rgba(255,215,0,0.4)'
+                boxShadow: '0 4px 20px rgba(255,215,0,0.4)',
+                opacity: isInitializing ? 0.6 : 1,
               }}
             >
               CASH OUT {cashOut.toFixed(2)} USDT
@@ -324,6 +389,7 @@ export default function Minesweeper({ user = {}, onLogout } = {}) {
           {gameOver && (
             <button
               onClick={resetGame}
+              disabled={isInitializing}
               style={{
                 display: 'block',
                 width: '100%',
@@ -336,8 +402,9 @@ export default function Minesweeper({ user = {}, onLogout } = {}) {
                 fontSize: '1.2rem',
                 fontWeight: 'bold',
                 color: '#000',
-                cursor: 'pointer',
-                fontFamily: 'monospace'
+                cursor: isInitializing ? 'not-allowed' : 'pointer',
+                fontFamily: 'monospace',
+                opacity: isInitializing ? 0.6 : 1,
               }}
             >
               NEW GAME

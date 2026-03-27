@@ -4,13 +4,15 @@ import Header from '../layout/header';
 import Sidebar from '../layout/sidebar';
 
 const GAMES = [
-    { id: 'roulette', icon: '◉', title: 'Roulette',  sub: 'European · Single Zero', badge: 'live', to: '/roulette',    desc: 'Single zero. Multiple bet types.' },
-    { id: 'slots',    icon: '◆', title: 'Car Slots', sub: '3-Reel · Up to 100x',   badge: 'live', to: '/slots',        desc: 'High-speed 3-reel machine.' },
-    { id: 'erotic',   icon: '♥', title: 'Erotic',     sub: '3-Reel · Up to 100x',   badge: 'live', to: '/erotic-slots', desc: 'Themed 3-reel machine.' },
-    { id: 'minesweeper', icon: '💣', title: 'Minesweeper', sub: '5x5 · Up to 10x',     badge: 'new',  to: '/minesweeper',   desc: 'Pick cells, dodge mines.' },
-    { id: 'crash',    icon: '▲', title: 'Crash',      sub: 'Multiplier · Cash Out',  badge: 'live', to: '/crash',        desc: 'Watch the multiplier climb.' },
-    { id: 'racing',   icon: '🏎️', title: 'Racing',    sub: 'Dodge · Distance·Payout', badge: 'live', to: '/racing',       desc: 'Tap to dodge obstacles.' },
-    { id: 'bj',       icon: '♠', title: 'Blackjack',  sub: '21 · Beat the Dealer',  badge: 'soon', to: '#',             desc: 'Classic 21.' },
+    { id: 'roulette', icon: '◉', title: 'Roulette',     sub: 'European · Single Zero', badge: 'live', to: '/roulette',     desc: 'Single zero. Multiple bet types.' },
+    { id: 'slots',    icon: '◆', title: 'Car Slots',    sub: '3-Reel · Up to 100x',    badge: 'live', to: '/slots',       desc: 'High-speed 3-reel machine.' },
+    { id: 'erotic',   icon: '♥', title: 'Erotic Slots', sub: '3-Reel · Up to 100x',    badge: 'live', to: '/erotic-slots',desc: 'Themed 3-reel machine.' },
+    { id: 'minesweeper', icon: '💣', title: 'Minesweeper', sub: '5x5 · Up to 10x',      badge: 'live', to: '/minesweeper',  desc: 'Pick cells, dodge mines.' },
+    { id: 'crash',    icon: '▲', title: 'Crash',        sub: 'Multiplier · Cash Out',   badge: 'live', to: '/crash',      desc: 'Watch the multiplier climb.' },
+    { id: 'hilo',     icon: '↕', title: 'Hi-Lo',        sub: 'Higher · Lower · 100x',   badge: 'live', to: '/hilo',       desc: 'Predict the next number.' },
+    { id: 'tapfrenzy',icon: '◈', title: 'Tap Frenzy',   sub: 'Tap Green · 10 Taps',    badge: 'live', to: '/tapfrenzy',  desc: 'Tap the right color fast.' },
+    { id: 'dice',     icon: '●', title: 'Dice',         sub: '1-6 · Exact Match',      badge: 'live', to: '/dice',       desc: 'Roll and match your guess.' },
+    { id: 'racing',   icon: '🏎️', title: 'Racing',      sub: 'Dodge · Distance·Payout',badge: 'live', to: '/racing',     desc: 'Tap to dodge obstacles.' },
 ];
 
 const Dashboard = ({ user, onLogout }) => {
@@ -60,7 +62,7 @@ const Dashboard = ({ user, onLogout }) => {
                             <h3 style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)', margin: 0 }}>
                                 Games
                             </h3>
-                            <span className="badge-live">5 Live</span>
+                            <span className="badge-live">9 Live</span>
                         </div>
 
                         <div className="games-grid">

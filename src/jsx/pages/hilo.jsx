@@ -18,9 +18,9 @@ const HiLo = ({ user, onLogout }) => {
     const [nonce, setNonce] = useState(0);
     const [chainCount, setChainCount] = useState(0); // consecutive wins
 
-    const generateNumber = useCallback((seed1, seed2, n) => {
+    const generateNumber = useCallback(async (seed1, seed2, n) => {
         try {
-            const hash = deriveHash(seed1, seed2, n);
+            const hash = await deriveHash(seed1, seed2, n);
             let hashStr = typeof hash === 'string' ? hash : (hash && hash.toString ? hash.toString() : JSON.stringify(hash));
             // Extract hex digits
             const hexMatch = hashStr.match(/[0-9a-fA-F]+/);
@@ -33,17 +33,17 @@ const HiLo = ({ user, onLogout }) => {
     }, []);
 
     // Start game - show initial number
-    const startGame = useCallback(() => {
+    const startGame = useCallback(async () => {
         const amount = parseFloat(betAmount) || 0;
         if (amount <= 0 || amount > balance) {
             alert('Invalid bet amount');
             return;
         }
 
-        const newSeed = newServerSeed();
+        const newSeed = await newServerSeed();
         setServerSeed(newSeed);
         
-        const current = generateNumber(newSeed, clientSeed, nonce * 2);
+        const current = await generateNumber(newSeed.serverSeed, clientSeed, nonce * 2);
         setCurrentNumber(current);
         setGameState('waiting_guess');
         setPlayerGuess(null);
@@ -52,15 +52,15 @@ const HiLo = ({ user, onLogout }) => {
     }, [betAmount, balance, clientSeed, nonce, generateNumber]);
 
     // Make guess (Hi or Lo)
-    const makeGuess = useCallback((guess) => {
+    const makeGuess = useCallback(async (guess) => {
         if (gameState !== 'waiting_guess') return;
 
         setPlayerGuess(guess);
         setGameState('showing_current');
 
         // Generate next number
-        setTimeout(() => {
-            const next = generateNumber(serverSeed, clientSeed, nonce * 2 + 1);
+        setTimeout(async () => {
+            const next = await generateNumber(serverSeed.serverSeed, clientSeed, nonce * 2 + 1);
             setNextNumber(next);
 
             // Determine result

@@ -134,7 +134,6 @@ const Slots = () => {
 
     const bet = parseFloat(betAmount) || 0;
 
-    // Memoized callback to properly capture all dependencies and avoid stale closures
     const handleSpin = useCallback(async () => {
         if (spinning || bet <= 0 || bet > balance) return;
         setSpinning(true);
@@ -154,10 +153,6 @@ const Slots = () => {
         setTargets(hashTargets);
         const paylineSymbols = hashTargets.map((idx, r) => strips[r][idx]);
 
-        // Calculate animation completion time based on reel count
-        const animationDuration = 2000 + (REEL_COUNT - 1) * 400 + 300;
-
-        // Create memoized completion callback with proper closure
         const onAllDone = async () => {
             const { winnings, lines } = evaluate(paylineSymbols, bet);
             setBalance(prev => +(prev + winnings).toFixed(2));
@@ -183,7 +178,7 @@ const Slots = () => {
             setServerSeedHash(nextHash);
         };
 
-        setTimeout(onAllDone, animationDuration);
+        setTimeout(onAllDone, 2000 + (REEL_COUNT - 1) * 400 + 300);
     }, [spinning, bet, balance, strips, serverSeed, clientSeed, nonce]);
 
     const copyAddress = () => {

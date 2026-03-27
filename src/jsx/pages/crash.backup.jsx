@@ -4,7 +4,7 @@ import Sidebar from '../layout/sidebar';
 import ProvablyFairPanel from '../components/ProvablyFairPanel';
 import { newServerSeed, deriveHash, generateRandomHex } from '../../utils/provablyFair';
 
-const Crash = ({ user = {}, onLogout } = {}) => {
+const Crash = ({ user, onLogout }) => {
     const [balance, setBalance] = useState(user?.balance || 1000);
     const [betAmount, setBetAmount] = useState('10');
     const [gameState, setGameState] = useState('idle'); // idle, betting, running, crashed, won
@@ -12,17 +12,18 @@ const Crash = ({ user = {}, onLogout } = {}) => {
     const [crashPoint, setCrashPoint] = useState(null);
     const [history, setHistory] = useState([]);
     const [betHistory, setBetHistory] = useState([]);
-    const [serverSeed, setServerSeed] = useState('');
-    const [serverSeedHash, setServerSeedHash] = useState('');
-    const [clientSeed, setClientSeed] = useState(() => generateRandomHex(8));
+    const [serverSeed, setServerSeed] = useState(null);
+    const [clientSeed, setClientSeed] = useState(generateRandomHex());
     const [nonce, setNonce] = useState(0);
     
     const gameLoopRef = useRef(null);
-    const frameCountRef = useRef(0);
+    const startTimeRef = useRef(null);
+    const cachedCrashRef = useRef(null);
 
     // Generate crash point using provably fair
-    const generateCrashPoint = useCallback((hash) => {
+    const generateCrashPoint = useCallback((seed1, seed2, n) => {
         try {
+            const hash = deriveHash(seed1, seed2, n);
             const hashStr = typeof hash === 'string' ? hash : JSON.stringify(hash);
             const uint = parseInt(hashStr.substring(0, 8), 16) || 0;
             // Map to range [1.01, ~200] with exponential distribution
@@ -36,8 +37,8 @@ const Crash = ({ user = {}, onLogout } = {}) => {
         }
     }, []);
 
-    // Start new game with proper async handling
-    const startGame = useCallback(async () => {
+    // Start new game
+    const startGame = useCallback(() => {
         const amount = parseFloat(betAmount) || 0;
         if (amount <= 0 || amount > balance) {
             alert('Invalid bet amount');
@@ -45,53 +46,44 @@ const Crash = ({ user = {}, onLogout } = {}) => {
         }
 
         setGameState('running');
-        setBalance(prev => +(prev - amount).toFixed(2));
+        setBalance(balance - amount);
         setMultiplier(1.0);
-        setCrashPoint(null);
-        frameCountRef.current = 0;
+        startTimeRef.current = Date.now();
 
-        // Generate crash point PROPERLY with await
-        const { serverSeed: newSeed, serverSeedHash: newHash } = await newServerSeed();
+        // Generate crash point
+        const newSeed = newServerSeed();
         setServerSeed(newSeed);
-        setServerSeedHash(newHash);
-        
-        const hash = await deriveHash(newSeed, clientSeed, nonce);
-        const crash = generateCrashPoint(hash);
+        const crash = generateCrashPoint(newSeed, clientSeed, nonce);
+        cachedCrashRef.current = crash;
         setCrashPoint(crash);
 
-        // Game loop using RAF instead of setInterval
-        const runGameLoop = (timestamp) => {
-            frameCountRef.current++;
-            // Multiplier increases ~0.02 per frame (60fps ≈ 16.67ms per frame)
-            const newMult = 1 + (frameCountRef.current * 0.0015);
+        // Game loop
+        let frame = 0;
+        gameLoopRef.current = setInterval(() => {
+            frame++;
+            // Multiplier increases ~0.02 per frame (50ms = 1 frame)
+            const newMult = 1 + (frame * 0.001);
             setMultiplier(Math.floor(newMult * 100) / 100);
 
             if (newMult >= crash) {
+                clearInterval(gameLoopRef.current);
                 setGameState('crashed');
                 setMultiplier(crash);
                 setCrashPoint(crash);
                 setBetHistory(prev => [...prev, { amount, multiplier: crash, result: 'lost', status: 'crashed' }]);
                 setHistory(prev => [crash, ...prev.slice(0, 49)]);
-            } else {
-                gameLoopRef.current = requestAnimationFrame(runGameLoop);
             }
-        };
-
-        gameLoopRef.current = requestAnimationFrame(runGameLoop);
+        }, 50);
     }, [betAmount, balance, clientSeed, nonce, generateCrashPoint]);
 
     // Cashout
     const cashout = useCallback(() => {
         if (gameState !== 'running' || !multiplier) return;
 
-        if (gameLoopRef.current) {
-            cancelAnimationFrame(gameLoopRef.current);
-            gameLoopRef.current = null;
-        }
-
+        clearInterval(gameLoopRef.current);
         const amount = parseFloat(betAmount) || 0;
         const winnings = Math.floor(amount * multiplier * 100) / 100;
-        setBalance(prev => +(prev + winnings).toFixed(2));
+        setBalance(prev => prev + winnings);
         setGameState('won');
         
         setBetHistory(prev => [...prev, { 
@@ -104,27 +96,21 @@ const Crash = ({ user = {}, onLogout } = {}) => {
         setHistory(prev => [multiplier.toFixed(2), ...prev.slice(0, 49)]);
 
         setNonce(n => n + 1);
+        setClientSeed(generateRandomHex());
     }, [gameState, multiplier, betAmount]);
 
     // Reset for next round
     const reset = useCallback(() => {
-        if (gameLoopRef.current) {
-            cancelAnimationFrame(gameLoopRef.current);
-            gameLoopRef.current = null;
-        }
         setGameState('idle');
         setMultiplier(1.0);
         setCrashPoint(null);
-        setBetAmount('10');
-        frameCountRef.current = 0;
+        setBetAmount('');
     }, []);
 
     // Cleanup on unmount
     useEffect(() => {
         return () => {
-            if (gameLoopRef.current) {
-                cancelAnimationFrame(gameLoopRef.current);
-            }
+            if (gameLoopRef.current) clearInterval(gameLoopRef.current);
         };
     }, []);
 
@@ -170,15 +156,15 @@ const Crash = ({ user = {}, onLogout } = {}) => {
                                     />
                                 ))}
 
-                                {/* Curve - Fixed math */}
-                                {gameState !== 'idle' && (
+                                {/* Curve */}
+                                {gameState === 'running' || gameState === 'crashed' || gameState === 'won' ? (
                                     <path
-                                        d={`M 0 200 Q 100 ${Math.max(0, 200 - Math.min(multiplier, crashPoint || multiplier) * 25)} 400 ${Math.max(0, 200 - Math.min(crashPoint || multiplier, crashPoint || multiplier) * 25)}`}
+                                        d={`M 0 200 Q 100 ${Math.max(0, 200 - multiplier * 30)} 400 ${Math.max(0, 200 - (crashPoint || multiplier) * 30)}`}
                                         stroke="#00ff00"
                                         strokeWidth="2"
                                         fill="none"
                                     />
-                                )}
+                                ) : null}
                             </svg>
                         </div>
 
@@ -228,7 +214,7 @@ const Crash = ({ user = {}, onLogout } = {}) => {
 
                         {/* Balance */}
                         <div className="balance-display">
-                            Balance: {balance.toFixed(2)} USDT
+                            Balance: ${balance.toFixed(2)}
                         </div>
                     </div>
 
@@ -253,10 +239,10 @@ const Crash = ({ user = {}, onLogout } = {}) => {
                                     key={idx} 
                                     className={`bet-item ${bet.result}`}
                                 >
-                                    <div className="bet-amount">{bet.amount.toFixed(2)} USDT</div>
+                                    <div className="bet-amount">${bet.amount.toFixed(2)}</div>
                                     <div className="bet-multiplier">{bet.multiplier}x</div>
                                     <div className="bet-result">
-                                        {bet.result === 'won' ? `+${bet.winnings.toFixed(2)}` : 'Lost'}
+                                        {bet.result === 'won' ? `+$${bet.winnings.toFixed(2)}` : 'Lost'}
                                     </div>
                                 </div>
                             )) : <p>No bets yet</p>}
@@ -265,15 +251,12 @@ const Crash = ({ user = {}, onLogout } = {}) => {
                 </div>
 
                 {/* Provably Fair */}
-                {serverSeedHash && (
-                    <ProvablyFairPanel 
-                        game="crash"
-                        serverSeedHash={serverSeedHash}
-                        clientSeed={clientSeed}
-                        onClientSeedChange={setClientSeed}
-                        nonce={nonce}
-                    />
-                )}
+                <ProvablyFairPanel 
+                    serverSeed={serverSeed}
+                    clientSeed={clientSeed}
+                    nonce={nonce}
+                    result={crashPoint}
+                />
             </main>
 
             <style>{`
@@ -356,7 +339,6 @@ const Crash = ({ user = {}, onLogout } = {}) => {
                     color: #fff;
                     border-radius: 4px;
                     font-size: 1rem;
-                    font-family: inherit;
                 }
 
                 .btn {

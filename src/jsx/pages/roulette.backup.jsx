@@ -67,8 +67,6 @@ const getPayout = (betId, betAmount) => {
 const drawWheel = (canvas, rotation = 0) => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
     const size = canvas.width;
     const cx = size / 2, cy = size / 2;
     const outerR = size / 2 - 4;
@@ -161,19 +159,9 @@ const Roulette = () => {
         });
     }, []);
 
-    // Draw wheel on mount and cleanup RAF on unmount
-    useEffect(() => {
-        drawWheel(canvasRef.current, 0);
-        
-        return () => {
-            if (rafRef.current) {
-                cancelAnimationFrame(rafRef.current);
-                rafRef.current = null;
-            }
-        };
-    }, []);
-
     const totalBet = selectedBets.reduce((s, b) => s + b.amount, 0);
+
+    useEffect(() => { drawWheel(canvasRef.current, 0); }, []);
 
     const animateSpin = useCallback((targetRotation, onComplete) => {
         const startRot = rotationRef.current;
@@ -192,7 +180,6 @@ const Roulette = () => {
             if (progress < 1) {
                 rafRef.current = requestAnimationFrame(frame);
             } else {
-                rafRef.current = null;
                 onComplete();
             }
         };

@@ -5,14 +5,14 @@ import ProvablyFairPanel from '../components/ProvablyFairPanel';
 import { newServerSeed, deriveHash, deriveSlots, generateRandomHex } from '../../utils/provablyFair';
 
 const SYMBOLS = [
-    { id: 'f1',    emoji: '🏎', label: 'F1',       payout3: 100, payout2: 5, weight: 2 },
-    { id: 'super', emoji: '🚀', label: 'Rocket',   payout3: 50,  payout2: 3, weight: 3 },
-    { id: 'sports',emoji: '🚗', label: 'Car',      payout3: 20,  payout2: 2, weight: 5 },
-    { id: 'suv',   emoji: '🚙', label: 'SUV',      payout3: 10,  payout2: 1, weight: 7 },
-    { id: 'taxi',  emoji: '🚕', label: 'Taxi',     payout3: 5,   payout2: 0, weight: 9 },
-    { id: 'flag',  emoji: '🏁', label: 'Flag',     payout3: 3,   payout2: 0, weight: 10 },
-    { id: 'key',   emoji: '🔑', label: 'Key',      payout3: 2,   payout2: 0, weight: 12 },
-    { id: 'star',  emoji: '★',  label: 'Star',     payout3: 1.5, payout2: 0, weight: 14 },
+    { id: 'kiss',    emoji: '💋', label: 'Kiss',      payout3: 100, payout2: 8,  weight: 2  },
+    { id: 'bikini',  emoji: '👙', label: 'Bikini',   payout3: 50,  payout2: 5,  weight: 3  },
+    { id: 'thong',   emoji: '🩱', label: 'Swimsuit', payout3: 25,  payout2: 3,  weight: 5  },
+    { id: 'heel',    emoji: '👠', label: 'Heel',     payout3: 15,  payout2: 2,  weight: 7  },
+    { id: 'lipstick',emoji: '💄', label: 'Lipstick',  payout3: 8,   payout2: 1,  weight: 9  },
+    { id: 'rose',    emoji: '🌹', label: 'Rose',      payout3: 5,   payout2: 0,  weight: 11 },
+    { id: 'cherry',  emoji: '🍒', label: 'Cherry',    payout3: 3,   payout2: 0,  weight: 13 },
+    { id: 'fire',    emoji: '🔥', label: 'Fire',      payout3: 1.5, payout2: 0,  weight: 14 },
 ];
 
 const POOL = SYMBOLS.flatMap(s => Array(s.weight).fill(s));
@@ -80,7 +80,7 @@ const Reel = ({ strip, targetIndex, spinning, delay, onDone }) => {
             overflow: 'hidden',
             borderRadius: 'var(--radius)',
             background: 'var(--card2)',
-            border: '1px solid var(--border)',
+            border: '1px solid rgba(232,0,15,0.25)',
         }}>
             <div style={{
                 position: 'absolute',
@@ -88,8 +88,8 @@ const Reel = ({ strip, targetIndex, spinning, delay, onDone }) => {
                 left: 0, right: 0,
                 height: SYMBOL_HEIGHT,
                 background: 'rgba(232,0,15,0.06)',
-                borderTop: '1px solid rgba(232,0,15,0.3)',
-                borderBottom: '1px solid rgba(232,0,15,0.3)',
+                borderTop: '1px solid rgba(232,0,15,0.4)',
+                borderBottom: '1px solid rgba(232,0,15,0.4)',
                 zIndex: 2, pointerEvents: 'none',
             }} />
             <div ref={reelRef} style={{ height: '100%', overflowY: 'scroll', scrollbarWidth: 'none' }}>
@@ -107,8 +107,8 @@ const Reel = ({ strip, targetIndex, spinning, delay, onDone }) => {
 
 const INITIAL_BALANCE = 1000;
 
-const Slots = () => {
-    const [balance, setBalance] = useState(INITIAL_BALANCE);
+const EroticSlots = ({ user, onLogout }) => {
+    const [balance, setBalance] = useState(user?.balance || INITIAL_BALANCE);
     const [betAmount, setBetAmount] = useState('10');
     const [spinning, setSpinning] = useState(false);
     const [strips] = useState(() => Array.from({ length: REEL_COUNT }, () => makeStrip(30)));
@@ -117,14 +117,14 @@ const Slots = () => {
     const [history, setHistory] = useState([]);
     const [showDeposit, setShowDeposit] = useState(false);
     const [copied, setCopied] = useState(false);
-
+    
     // Provably fair state
     const [serverSeed, setServerSeed] = useState('');
     const [serverSeedHash, setServerSeedHash] = useState('');
     const [clientSeed, setClientSeed] = useState(() => generateRandomHex(8));
     const [nonce, setNonce] = useState(0);
     const [lastGame, setLastGame] = useState(null);
-
+    
     useEffect(() => {
         newServerSeed().then(({ serverSeed: s, serverSeedHash: h }) => {
             setServerSeed(s);
@@ -134,7 +134,6 @@ const Slots = () => {
 
     const bet = parseFloat(betAmount) || 0;
 
-    // Memoized callback to properly capture all dependencies and avoid stale closures
     const handleSpin = useCallback(async () => {
         if (spinning || bet <= 0 || bet > balance) return;
         setSpinning(true);
@@ -143,22 +142,23 @@ const Slots = () => {
 
         // Derive reel target indices from hash (provably fair)
         const hash = await deriveHash(serverSeed, clientSeed, nonce);
-        const poolSize = strips[0].length; // all strips same length
+        const poolSize = strips[0].length;
         const hashTargets = deriveSlots(hash, REEL_COUNT, poolSize);
-
-        // Capture for verification record before state changes
+        
+        const newTargets = hashTargets;
+        setTargets(newTargets);
+        const paylineSymbols = newTargets.map((idx, r) => strips[r][idx]);
+        
+        // Capture for verification record
         const roundServerSeed = serverSeed;
-        const roundClientSeed = clientSeed;
-        const roundNonce = nonce;
+        setLastGame({
+            serverSeed: roundServerSeed,
+            clientSeed,
+            nonce,
+            hash,
+        });
 
-        setTargets(hashTargets);
-        const paylineSymbols = hashTargets.map((idx, r) => strips[r][idx]);
-
-        // Calculate animation completion time based on reel count
-        const animationDuration = 2000 + (REEL_COUNT - 1) * 400 + 300;
-
-        // Create memoized completion callback with proper closure
-        const onAllDone = async () => {
+        const onAllDone = () => {
             const { winnings, lines } = evaluate(paylineSymbols, bet);
             setBalance(prev => +(prev + winnings).toFixed(2));
             setLastWin({ winnings, lines, bet });
@@ -168,22 +168,10 @@ const Slots = () => {
                 time: new Date().toLocaleTimeString(),
             }, ...prev].slice(0, 20));
             setSpinning(false);
-
-            // Reveal server seed, prepare next round
-            setLastGame({
-                serverSeed: roundServerSeed,
-                clientSeed: roundClientSeed,
-                nonce: roundNonce,
-                outcome: hashTargets,
-                poolSize,
-            });
             setNonce(n => n + 1);
-            const { serverSeed: nextSeed, serverSeedHash: nextHash } = await newServerSeed();
-            setServerSeed(nextSeed);
-            setServerSeedHash(nextHash);
         };
 
-        setTimeout(onAllDone, animationDuration);
+        setTimeout(onAllDone, 2000 + (REEL_COUNT - 1) * 400 + 300);
     }, [spinning, bet, balance, strips, serverSeed, clientSeed, nonce]);
 
     const copyAddress = () => {
@@ -198,21 +186,22 @@ const Slots = () => {
         profit: history.reduce((s, h) => s + h.net, 0).toFixed(2),
     } : null;
 
-    const isJackpot = lastWin?.lines?.some(l => l.symbol.id === 'f1' && l.type.includes('3'));
+    const isJackpot = lastWin?.lines?.some(l => l.symbol.id === 'kiss' && l.type.includes('3'));
 
     return (
         <>
             <Sidebar />
-            <Header usdtBalance={balance} onDeposit={() => setShowDeposit(true)} />
+            <Header user={user} onLogout={onLogout} usdtBalance={balance} onDeposit={() => setShowDeposit(true)} />
 
             <div className="content-body">
                 <div className="content-inner">
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
                         <div>
-                            <h3 style={{ margin: 0, fontWeight: 800, fontSize: '1.3rem', color: 'var(--white)' }}>Car Slots</h3>
-                            <p style={{ color: 'var(--muted)', fontSize: '0.78rem', marginTop: 2, marginBottom: 0 }}>3-Reel · Up to 100x</p>
+                            <h3 style={{ margin: 0, fontWeight: 800, fontSize: '1.3rem', color: 'var(--white)' }}>Erotic Slots</h3>
+                            <p style={{ color: 'var(--muted)', fontSize: '0.78rem', marginTop: 2, marginBottom: 0 }}>3-Reel · Up to 100x · 18+</p>
                         </div>
+                        <span style={{ padding: '3px 10px', borderRadius: 2, background: 'rgba(232,0,15,0.08)', border: '1px solid rgba(232,0,15,0.25)', color: 'var(--red)', fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase' }}>18+</span>
                     </div>
 
                     {stats && (
@@ -232,7 +221,7 @@ const Slots = () => {
                     {isJackpot && (
                         <div style={{ background: 'rgba(232,0,15,0.08)', border: '1px solid rgba(232,0,15,0.3)', borderRadius: 'var(--radius)', padding: '16px 20px', marginBottom: 16, animation: 'fadeUp 0.3s' }}>
                             <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--white)' }}>JACKPOT +{lastWin.winnings.toFixed(2)} USDT</div>
-                            <div style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>Three F1 cars · 100x payout</div>
+                            <div style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>Three kisses · 100x payout</div>
                         </div>
                     )}
 
@@ -252,7 +241,7 @@ const Slots = () => {
                                 <div className="card-body" style={{ padding: '24px 20px' }}>
                                     <div style={{
                                         background: 'var(--black)',
-                                        border: '1px solid var(--border)',
+                                        border: '1px solid rgba(232,0,15,0.2)',
                                         borderRadius: 'var(--radius-lg)',
                                         padding: '20px 16px',
                                         display: 'flex',
@@ -260,7 +249,7 @@ const Slots = () => {
                                         alignItems: 'center',
                                         gap: 12,
                                     }}>
-                                        <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)' }}>Car Slots</div>
+                                        <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--red)' }}>Erotic Slots</div>
                                         <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
                                             {strips.map((strip, i) => (
                                                 <Reel key={i} strip={strip} targetIndex={targets[i]} spinning={spinning} delay={i * 400} />
@@ -327,6 +316,8 @@ const Slots = () => {
                         </div>
                     </div>
 
+                    {lastGame && <ProvablyFairPanel game="slots" data={lastGame} />}
+                    
                     {history.length > 0 && (
                         <div className="card mt-4">
                             <div className="card-header"><h4>History</h4><span className="text-muted fs-sm">{history.length} spins</span></div>
@@ -347,15 +338,6 @@ const Slots = () => {
                             </div>
                         </div>
                     )}
-
-                    <ProvablyFairPanel
-                        game="slots"
-                        serverSeedHash={serverSeedHash}
-                        clientSeed={clientSeed}
-                        onClientSeedChange={setClientSeed}
-                        nonce={nonce}
-                        lastGame={lastGame}
-                    />
                 </div>
             </div>
 
@@ -378,4 +360,4 @@ const Slots = () => {
     );
 };
 
-export default Slots;
+export default EroticSlots;
